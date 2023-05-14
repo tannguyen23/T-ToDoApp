@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useAppDispatch } from "../../redux/store";
 import { useState } from "react";
 import { Team } from "../../types/Team";
-import { addTeam } from "../../redux/features/TeamSlice";
+import { addTeam, deleteTeam } from "../../redux/features/TeamSlice";
 import { sendNotification } from "../../redux/features/NotificationSlice";
 import AddTeamDialog from "./AddTeamDialog";
 import ListTeam from "./ListTeam";
@@ -55,6 +55,12 @@ export default function Teams() {
     dispatch(sendNotification({ message: "Add team successfully " }));
     handleCloseAddTeamDialog();
   };
+
+  const handleRemoveTeam = (deleteTeamId: number) => {
+    dispatch(deleteTeam({ deleteTeamId }));
+    dispatch(sendNotification({ message: "Delete team successfully " }));
+    handleCloseViewTeamDialog();
+  }
 
   return (
     <Container>
@@ -110,6 +116,7 @@ export default function Teams() {
           onClose={() => {
             handleCloseViewTeamDialog();
           }}
+          onDelete={(id) => {handleRemoveTeam(id)}}
         />
       ) : (
         <></>

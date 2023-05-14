@@ -20,6 +20,8 @@ import { createRandomString } from "../../utils/createRandom";
 import { Member } from "../../types/Member";
 import { Team } from "../../types/Team";
 import { sendNotification } from "../../redux/features/NotificationSlice";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import DeleteConfirmDialog from "../DeleteConfirmDialog";
 
 const INVITE_CODE_LENGTH = 6;
 
@@ -27,6 +29,7 @@ interface ViewTaskDialogProps {
   id: number | undefined;
   open: boolean;
   onClose: () => void;
+  onDelete: (id: number) => void;
 }
 export default function ViewTaskDialog(props: ViewTaskDialogProps) {
   const { id } = props;
@@ -35,7 +38,7 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
     state.team.teams.find((team: Team) => team.id === id)
   );
   const { open } = props;
-
+  const [openRemoveConfirmDialog, setOpenRemoveConfirmDialog] = useState(false);
   const [name, setName] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [description, setDescription] = useState("");
@@ -63,6 +66,21 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
         });
     }
   }
+
+  const handleClickOpenRemoveConfirmDialog = () => {
+    setOpenRemoveConfirmDialog(true);
+  };
+
+  const handleCloseRemoveConfirmDialog = () => {
+    setOpenRemoveConfirmDialog(false);
+  };
+
+  const handleDeleteTask = () => {
+    if (id !== undefined) {
+      props.onDelete(id);
+      handleCloseRemoveConfirmDialog();
+    }
+  };
 
   const handleClickCopyInviteCode = () => {
     console.log("Copy Invite Code");
@@ -94,15 +112,25 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
           <CardContent sx={{ textAlign: "left" }}>
             <Grid
               container
-              justifyContent="space-between"
-              alignItems="flex-end"
-              direction={"row"}
+              justifyContent={"flex-start"}
+              alignItems={"center"}
+              gap={3}
             >
-              <Grid>
-                <Typography variant="h5" component="span">
-                  {name}
-                </Typography>
-              </Grid>
+              <Typography variant="h5" component="span">
+                {name}
+                
+              </Typography>
+              <Typography variant="caption">Created on </Typography>
+                <Box
+                  component="span"
+                  sx={{
+                    p : 1,
+                    border: "1px solid grey",
+                    borderRadius: "16px",
+                  }}
+                >
+                  <Typography variant="body2">{timeCreate}</Typography>
+                </Box>
             </Grid>
           </CardContent>
         </Card>
@@ -165,19 +193,29 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
           ></TextField>
         </Grid>
         <DialogActions>
-          <Grid container justifyContent={"flex-end"} alignItems={"center"}>
-            <Typography variant="caption">Created on </Typography>
-            <Box
-              component="span"
-              sx={{
-                p: 1,
-                m: 1,
-                border: "1px solid grey",
-                borderRadius: "16px",
+          <Grid container justifyContent={'flex-end'} alignItems={'center'}>
+          <Grid>
+            <Button
+              variant="outlined"
+              color="error"
+              endIcon={<DeleteForeverIcon />}
+              onClick={() => {
+                handleClickOpenRemoveConfirmDialog();
               }}
             >
-              <Typography variant="body2">{timeCreate}</Typography>
-            </Box>
+              Remove
+            </Button>
+            <DeleteConfirmDialog
+              onAccept={() => {
+                handleDeleteTask();
+              }}
+              onClose={() => {
+                handleCloseRemoveConfirmDialog();
+              }}
+              open={openRemoveConfirmDialog}
+              message="Are you sure to delete this team ?"
+            />
+          </Grid>
           </Grid>
         </DialogActions>
       </DialogContent>

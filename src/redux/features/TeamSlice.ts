@@ -27,8 +27,13 @@ export const TeamSlice = createSlice({
       action.payload.addTeam.id = state.teams.length;
       state.teams.push(action.payload.addTeam);
     },
+    deleteTeam: (state, action: PayloadAction<{ deleteTeamId : number}>) => {
+      console.log("Deleting team");
+      const indexDeleteTeamId = state.teams.findIndex(team => team.id === action.payload.deleteTeamId);
+      state.teams.splice(indexDeleteTeamId, 1);
+    }
   },
 });
 
 export default TeamSlice.reducer;
-export const { addTeam } = TeamSlice.actions;
+export const { addTeam , deleteTeam} = TeamSlice.actions;
