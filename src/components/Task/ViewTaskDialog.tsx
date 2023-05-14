@@ -2,15 +2,20 @@ import { useEffect, useState } from "react";
 import { StatusTask, Task } from "../../types/Task";
 import {
   Box,
+  Button,
   Card,
   CardContent,
+  CardHeader,
   CardMedia,
   Chip,
   Dialog,
   DialogContent,
   Grid,
+  IconButton,
   Typography,
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { updateStatus } from "../../redux/features/TaskSlice";
 import { sendNotification } from "../../redux/features/NotificationSlice";
@@ -18,22 +23,25 @@ import StatusIcon from "../StatusIcon";
 import ProgressBar from "../ProgressBar/ProgressBar";
 import { Category } from "../../types/Category";
 import { Member } from "../../types/Member";
+import DeleteConfirmDialog from "../DeleteConfirmDialog";
 
 interface ViewTaskDialogProps {
   id: number | undefined;
   open: boolean;
   onClose: () => void;
+  onDelete: (id: number) => void;
 }
 export default function ViewTaskDialog(props: ViewTaskDialogProps) {
   const { id } = props;
   const dispatch = useAppDispatch();
-  const detail: Task | undefined = useAppSelector((state) =>
+  const detail: Task | undefined = useAppSelector((state ) =>
     state.task.tasks.find((task: Task) => task.id === id)
   );
   const { open } = props;
-
+  const [openRemoveConfirmDialog, setOpenRemoveConfirmDialog] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [imgUrl, setImgUrl] = useState<string | undefined>("");
   const [timeStart, setTimeStart] = useState<string>();
   const [timeEnd, setTimeEnd] = useState<string>();
   const [categories, setCategories] = useState<Category[]>();
@@ -41,6 +49,21 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
   const [status, setStatus] = useState<StatusTask>("NOT_START");
   const handleClose = () => {
     props.onClose();
+  };
+
+  const handleClickOpenRemoveConfirmDialog = () => {
+    setOpenRemoveConfirmDialog(true);
+  };
+
+  const handleCloseRemoveConfirmDialog = () => {
+    setOpenRemoveConfirmDialog(false);
+  };
+
+  const handleDeleteTask = () => {
+    if (id !== undefined) {
+      props.onDelete(id);
+      handleCloseRemoveConfirmDialog();
+    }
   };
 
   const handleUpdateStatus = (newStatus: StatusTask) => {
@@ -56,24 +79,33 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
       console.log("Task detail");
       setTitle(detail.title);
       setDescription(detail.description);
+      setImgUrl(detail.imgUrl);
       setTimeStart(detail.timeStart);
       setTimeEnd(detail.timeEnd);
       setCategories(detail.categories);
       setMembers(detail.assignMember);
       setStatus(detail.status);
     }
-    
   }, [id]);
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth={"md"}>
       <DialogContent>
         <Card variant="outlined" sx={{ my: 1 }}>
+          <CardHeader
+            action={
+              <>
+                <IconButton aria-label="settings" color="primary">
+                  <EditIcon />
+                </IconButton>
+              </>
+            }
+          ></CardHeader>
           <CardMedia
             sx={{ borderRadius: "4px" }}
             component="img"
             height="140"
-            image={process.env.PUBLIC_URL + "/img/task.jpg"}
+            image={imgUrl || process.env.PUBLIC_URL + "/img/task.jpg"}
             alt="task img"
           />
           <CardContent sx={{ textAlign: "left" }}>
@@ -131,19 +163,56 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
           ))}
         </Grid>
 
-        <Grid container justifyContent={"flex-end"} alignItems={"center"}>
-          <Box
-            component="span"
-            sx={{ p: 1, m: 1, border: "1px solid grey", borderRadius: "16px" }}
-          >
-            <Typography variant="body2">{timeStart}</Typography>
-          </Box>
-          <Box
-            component="span"
-            sx={{ p: 1, m: 1, border: "1px solid grey", borderRadius: "16px" }}
-          >
-            <Typography variant="body2">{timeEnd}</Typography>
-          </Box>
+        <Grid container justifyContent={"space-between"} alignItems={"center"}>
+          <Grid>
+            <Button
+              variant="outlined"
+              color="error"
+              endIcon={<DeleteForeverIcon />}
+              onClick={() => {
+                handleClickOpenRemoveConfirmDialog();
+              }}
+            >
+              Remove
+            </Button>
+            <DeleteConfirmDialog
+              onAccept={() => {
+                handleDeleteTask();
+              }}
+              onClose={() => {
+                handleCloseRemoveConfirmDialog();
+              }}
+              open={openRemoveConfirmDialog}
+              message="Are you sure to delete this task ?"
+            />
+          </Grid>
+
+          <Grid>
+            <Grid container justifyContent={"flex-end"} alignItems={"center"}>
+              <Box
+                component="span"
+                sx={{
+                  p: 1,
+                  m: 1,
+                  border: "1px solid grey",
+                  borderRadius: "16px",
+                }}
+              >
+                <Typography variant="body2">{timeStart}</Typography>
+              </Box>
+              <Box
+                component="span"
+                sx={{
+                  p: 1,
+                  m: 1,
+                  border: "1px solid grey",
+                  borderRadius: "16px",
+                }}
+              >
+                <Typography variant="body2">{timeEnd}</Typography>
+              </Box>
+            </Grid>
+          </Grid>
         </Grid>
       </DialogContent>
     </Dialog>

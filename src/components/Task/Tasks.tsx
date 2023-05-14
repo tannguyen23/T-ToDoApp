@@ -7,7 +7,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import { Task } from "../../types/Task";
 import { useAppDispatch } from "../../redux/store";
-import { addTask } from "../../redux/features/TaskSlice";
+import { addTask, deleteTask } from "../../redux/features/TaskSlice";
 import { sendNotification } from "../../redux/features/NotificationSlice";
 
 import ListTask from "./ListTask";
@@ -69,6 +69,12 @@ export default function Tasks() {
     handleCloseAddTaskDialog();
   };
 
+  const handleRemoveTask = (deleteTaskId: number) => {
+    dispatch(deleteTask({ deleteTaskId }));
+    dispatch(sendNotification({ message: "Delete task successfully " }));
+    handleCloseViewTaskDialog();
+  }
+
   return (
     <Grid
       container
@@ -109,7 +115,7 @@ export default function Tasks() {
       <Grid
         xs={12}
         md={8}
-        lg={19}
+        lg={9}
         xl={10}
         container
         sx={{
@@ -235,6 +241,7 @@ export default function Tasks() {
             onClose={() => {
               handleCloseViewTaskDialog();
             }}
+            onDelete={(id) => handleRemoveTask(id)}
           />
         ) : (
           <></>
