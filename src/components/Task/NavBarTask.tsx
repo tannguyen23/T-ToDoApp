@@ -30,7 +30,7 @@ export default function NavBarTask() {
   };
 
   return (
-    <Grid >
+    <Grid sx={{height : '100%'}}>
       <Typography
         variant={"h6"}
         sx={{ paddingY: 2, textAlign: "center" }}

@@ -106,14 +106,16 @@ const renderListTaskWithStatus = (
                   sx={{ overflow: "hidden", borderRadius: "8px" }}
                   onClick={() => {
                     console.log("Open view dialog...");
-                    handleOpenViewDialog(task.id)
+                    handleOpenViewDialog(task.id);
                   }}
                 >
                   <CardMedia
                     sx={{ borderTopRadius: "8px" }}
                     component="img"
                     height="120px"
-                    image={task.imgUrl || process.env.PUBLIC_URL + "/img/task.jpg"}
+                    image={
+                      task.imgUrl || process.env.PUBLIC_URL + "/img/task.jpg"
+                    }
                     alt="task img"
                   />
                   <CardContent sx={{ textAlign: "left" }}>
@@ -201,45 +203,91 @@ export default function ProgressLayout(props: ListTaskProps) {
   return (
     <Grid
       container
-      spacing={12}
-      sx={{ marginX: "0", height: "220px" }}
-      alignItems="stretch"
+      flexDirection={"row"}
     >
-      <Grid xs={12} sm={12} md={6} lg={4}>
-        <Typography
-          variant={"subtitle1"}
-          sx={{ color: "#000000" }}
-          fontWeight={"bold"}
-        >
-          Started
-        </Typography>
-        <Box sx={{ backgroundColor: "#F8F8F8" }} borderRadius={1} padding={2}>
-          {renderListTaskWithStatus(tasks, "NOT_START", props.handleOpenViewDialog)};
-        </Box>
+      <Grid
+        xs={6}
+        container
+        spacing={12}
+        sx={{ margin: "0", width: "100%" }}
+        alignItems="stretch"
+      >
+        <Grid xs={12} sm={12} md={6} lg={4}>
+          <Typography
+            variant={"subtitle1"}
+            sx={{ color: "#000000" }}
+            fontWeight={"bold"}
+          >
+            Started
+          </Typography>
+          <Box sx={{ backgroundColor: "#F8F8F8" }} borderRadius={1} padding={2}>
+            {renderListTaskWithStatus(
+              tasks,
+              "NOT_START",
+              props.handleOpenViewDialog
+            )}
+            ;
+          </Box>
+        </Grid>
+        <Grid xs={12} sm={12} md={6} lg={4}>
+          <Typography
+            variant={"subtitle1"}
+            sx={{ color: "#000000" }}
+            fontWeight={"bold"}
+          >
+            Processing
+          </Typography>
+          <Box sx={{ backgroundColor: "#F8F8F8" }} borderRadius={1} padding={2}>
+            {renderListTaskWithStatus(
+              tasks,
+              "PROCESSING",
+              props.handleOpenViewDialog
+            )}
+            ;
+          </Box>
+        </Grid>
+        <Grid xs={12} sm={12} md={6} lg={4}>
+          <Typography
+            variant={"subtitle1"}
+            sx={{ color: "#000000" }}
+            fontWeight={"bold"}
+          >
+            Done
+          </Typography>
+          <Box sx={{ backgroundColor: "#F8F8F8" }} borderRadius={1} padding={2}>
+            {renderListTaskWithStatus(
+              tasks,
+              "DONE",
+              props.handleOpenViewDialog
+            )}
+            ;
+          </Box>
+        </Grid>
       </Grid>
-      <Grid xs={12} sm={12} md={6} lg={4}>
-        <Typography
-          variant={"subtitle1"}
-          sx={{ color: "#000000" }}
-          fontWeight={"bold"}
-        >
-          Processing
-        </Typography>
-        <Box sx={{ backgroundColor: "#F8F8F8" }} borderRadius={1} padding={2}>
-          {renderListTaskWithStatus(tasks, "PROCESSING", props.handleOpenViewDialog)};
-        </Box>
-      </Grid>
-      <Grid xs={12} sm={12} md={6} lg={4}>
-        <Typography
-          variant={"subtitle1"}
-          sx={{ color: "#000000" }}
-          fontWeight={"bold"}
-        >
-          Done
-        </Typography>
-        <Box sx={{ backgroundColor: "#F8F8F8" }} borderRadius={1} padding={2}>
-          {renderListTaskWithStatus(tasks, "DONE", props.handleOpenViewDialog)};
-        </Box>
+      <Grid
+        container
+        spacing={12}
+        sx={{ margin: "0", width: "100%" }}
+        alignItems="stretch"
+        justifyContent="flex-end"
+      >
+        <Grid xs={12} sm={12} md={6} lg={4}>
+          <Typography
+            variant={"subtitle1"}
+            sx={{ color: "#000000" }}
+            fontWeight={"bold"}
+          >
+            Failed
+          </Typography>
+          <Box sx={{ backgroundColor: "#F8F8F8" }} borderRadius={1} padding={2}>
+            {renderListTaskWithStatus(
+              tasks,
+              "FAILED",
+              props.handleOpenViewDialog
+            )}
+            ;
+          </Box>
+        </Grid>
       </Grid>
     </Grid>
   );

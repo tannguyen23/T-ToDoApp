@@ -1,18 +1,27 @@
 import { useEffect, useState } from "react";
 import {
   Box,
+  Button,
   Card,
   CardContent,
   CardMedia,
   Chip,
   Dialog,
+  DialogActions,
   DialogContent,
   Grid,
+  IconButton,
+  TextField,
   Typography,
 } from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { createRandomString } from "../../utils/createRandom";
 import { Member } from "../../types/Member";
 import { Team } from "../../types/Team";
+import { sendNotification } from "../../redux/features/NotificationSlice";
+
+const INVITE_CODE_LENGTH = 6;
 
 interface ViewTaskDialogProps {
   id: number | undefined;
@@ -28,11 +37,36 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
   const { open } = props;
 
   const [name, setName] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
   const [description, setDescription] = useState("");
   const [timeCreate, setTimeCreate] = useState<string>();
   const [members, setMembers] = useState<Member[]>();
   const handleClose = () => {
     props.onClose();
+  };
+
+  const handleClickCreateInviteCode = () => {
+    setInviteCode(createRandomString(INVITE_CODE_LENGTH));
+  };
+
+  function copyTextToClipboard(text: string) {
+    if (!navigator.clipboard) {
+      document.execCommand("copy", true, text);
+    } else {
+      navigator.clipboard
+        .writeText(text)
+        .then(function () {
+          dispatch(sendNotification({ message: "Copied Text" }));
+        })
+        .catch(function () {
+          alert("Copy failed"); // error
+        });
+    }
+  }
+
+  const handleClickCopyInviteCode = () => {
+    console.log("Copy Invite Code");
+    copyTextToClipboard(inviteCode);
   };
 
   useEffect(() => {
@@ -69,9 +103,6 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
                   {name}
                 </Typography>
               </Grid>
-              {/* <Grid>
-                <StatusIcon status={status}></StatusIcon>
-              </Grid> */}
             </Grid>
           </CardContent>
         </Card>
@@ -92,7 +123,6 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
           sx={{
             py: 2,
             borderTop: "1px solid rgba(0, 0, 0, 0.12)",
-            borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
           }}
         >
           {members?.map((member) => (
@@ -100,15 +130,56 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
           ))}
         </Grid>
 
-        <Grid container justifyContent={"flex-end"} alignItems={"center"}>
-        <Typography variant="caption">Create at </Typography>
-          <Box
-            component="span"
-            sx={{ p: 1, m: 1, border: "1px solid grey", borderRadius: "16px" }}
+        <Grid
+          container
+          justifyContent={"flex-start"}
+          alignItems={"center"}
+          gap={2}
+        >
+          <Button
+            variant="contained"
+            onClick={() => {
+              handleClickCreateInviteCode();
+            }}
           >
-            <Typography variant="body2">{timeCreate}</Typography>
-          </Box>
+            Created code to invite
+          </Button>
+          <TextField
+            id="invite-code"
+            variant="outlined"
+            placeholder=""
+            value={inviteCode}
+            size="medium"
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  color={"primary"}
+                  onClick={() => {
+                    handleClickCopyInviteCode();
+                  }}
+                >
+                  <ContentCopyIcon />
+                </IconButton>
+              ),
+            }}
+          ></TextField>
         </Grid>
+        <DialogActions>
+          <Grid container justifyContent={"flex-end"} alignItems={"center"}>
+            <Typography variant="caption">Created on </Typography>
+            <Box
+              component="span"
+              sx={{
+                p: 1,
+                m: 1,
+                border: "1px solid grey",
+                borderRadius: "16px",
+              }}
+            >
+              <Typography variant="body2">{timeCreate}</Typography>
+            </Box>
+          </Grid>
+        </DialogActions>
       </DialogContent>
     </Dialog>
   );

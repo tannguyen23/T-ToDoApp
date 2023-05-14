@@ -70,13 +70,21 @@ export default function Tasks() {
   };
 
   return (
-    <Grid container height={"inherit"}>
+    <Grid
+      container
+      sx={{
+        height: "100%",
+        width: "100vw",
+        overflow: "auto",
+      }}
+    >
       <Grid
-        xs={2}
-        md={3}
-        lg={2}
+        md={4}
+        lg={3}
+        xl={2}
         sx={{
-          display: { xs: "none", md: "flex", lg: "flex" },
+          display: { xs: "none", md: "flex", lg: "flex", xl: "flex" },
+          position: "fixed",
           backgroundColor: "#1D267D",
           padding: 1,
           height: "100%",
@@ -87,23 +95,32 @@ export default function Tasks() {
         <NavBarTask />
       </Grid>
       <Grid
+        md={4}
+        lg={3}
+        xl={2}
+        sx={{
+          display: { xs: "none", md: "flex", lg: "flex", xl: "flex" },
+          padding: 1,
+          height: "100%",
+        }}
+        flexDirection={"column"}
+        gap={1}
+      ></Grid>
+      <Grid
         xs={12}
-        md={9}
-        lg={10}
+        md={8}
+        lg={19}
+        xl={10}
         container
         sx={{
           padding: "6px",
           display: "flex",
           flexDirection: "column",
-          height: "93.5%",
-          overflowY: "auto",
-          overflowX: "hidden",
         }}
       >
         <Grid
           container
           sx={{ width: "100%", paddingY: 1, margin: 0 }}
-          columnSpacing={3}
           justifyContent={"space-between"}
         >
           <Grid
