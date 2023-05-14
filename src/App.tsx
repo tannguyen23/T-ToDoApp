@@ -34,6 +34,7 @@ function App() {
                 path={route.path}
                 element={route.component}
               />
+              
             ))}
           </Routes>
         </Router>

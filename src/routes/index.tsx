@@ -33,6 +33,28 @@ const TeamLoadable = Loadable(lazy(() => import("../pages/Team")));
 
 export const routes: Array<Route> = [
   {
+    key: "/",
+    title: "/",
+    path: "/",
+    enabled: true,
+    component: (
+      <AuthGuard>
+        <TaskLoadable />
+      </AuthGuard>
+    ),
+  },
+  {
+    key: "*",
+    title: "*",
+    path: "*",
+    enabled: true,
+    component: (
+      <GuestGuard>
+        <Page404Loadable />
+      </GuestGuard>
+    ),
+  },
+  {
     key: "task",
     title: "Task",
     path: PATH_USER.task,
