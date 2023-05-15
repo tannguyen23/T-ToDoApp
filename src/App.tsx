@@ -5,23 +5,16 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import MainPage from "./pages/Task";
 import Notification from "./components/Notification";
 
 import { useAppSelector } from "./redux/store";
-import { useEffect, useState } from "react";
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { routes as appRoutes } from "./routes";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import AuthProvider from "./contexts/AuthContext";
+import { routes as appRoutes } from "./routes";
 
 function App() {
   const { message } = useAppSelector((state) => state.notification);
-  const [currentMessage, setCurrentMessage] = useState(message);
-  useEffect(() => {
-    console.log(`Current message : ${message}`);
-    setCurrentMessage(message);
-  }, [message]);
 
   return (
     <div className="App">

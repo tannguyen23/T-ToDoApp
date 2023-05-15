@@ -1,35 +1,25 @@
-import styled from "styled-components";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
-import Button from "@mui/material/Button";
-import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import CloseIcon from "@mui/icons-material/Close";
+import MenuOpenIcon from "@mui/icons-material/MenuOpen";
+import Button from "@mui/material/Button";
 
-import { Task } from "../../types/Task";
-import { useAppDispatch } from "../../redux/store";
-import { addTask, deleteTask } from "../../redux/features/TaskSlice";
 import { sendNotification } from "../../redux/features/NotificationSlice";
+import { addTask, deleteTask } from "../../redux/features/TaskSlice";
+import { useAppDispatch } from "../../redux/store";
+import { Task } from "../../types/Task";
 
-import ListTask from "./ListTask";
-import AddTaskDialog from "./AddTaskDialog";
-import ViewTaskDialog from "./ViewTaskDialog";
 import {
-  AppBar,
   Box,
-  Card,
-  Checkbox,
   Chip,
   Dialog,
-  FormControlLabel,
-  IconButton,
-  Slide,
-  Switch,
-  Toolbar,
-  Typography,
+  IconButton
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
+import AddTaskDialog from "./AddTaskDialog";
 import NavBarTask from "./NavBarTask";
 import ProgressLayout from "./ProgressLayout";
+import ViewTaskDialog from "./ViewTaskDialog";
 
 export default function Tasks() {
   const dispatch = useAppDispatch();
@@ -192,8 +182,9 @@ export default function Tasks() {
             alignItems={"center"}
             justifyContent={"space-around"}
             display={"flex"}
+            rowSpacing={2}
           >
-            <Grid container gap={2}>
+            <Grid container gap={2} >
               <Chip label="Today" variant="filled" color="primary"></Chip>
               <Chip
                 label="This month"

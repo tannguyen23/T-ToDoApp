@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import {
   Box,
   Button,
@@ -14,13 +15,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { useEffect, useState } from "react";
+import { sendNotification } from "../../redux/features/NotificationSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { createRandomString } from "../../utils/createRandom";
 import { Member } from "../../types/Member";
 import { Team } from "../../types/Team";
-import { sendNotification } from "../../redux/features/NotificationSlice";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { createRandomString } from "../../utils/createRandom";
 import DeleteConfirmDialog from "../DeleteConfirmDialog";
 
 const INVITE_CODE_LENGTH = 6;

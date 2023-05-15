@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { StatusTask, Task } from "../../types/Task";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   Box,
   Button,
@@ -14,16 +14,16 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { updateStatus } from "../../redux/features/TaskSlice";
+import { useEffect, useState } from "react";
 import { sendNotification } from "../../redux/features/NotificationSlice";
-import StatusIcon from "../StatusIcon";
-import ProgressBar from "../ProgressBar/ProgressBar";
+import { updateStatus } from "../../redux/features/TaskSlice";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { Category } from "../../types/Category";
 import { Member } from "../../types/Member";
+import { StatusTask, Task } from "../../types/Task";
 import DeleteConfirmDialog from "../DeleteConfirmDialog";
+import ProgressBar from "../ProgressBar/ProgressBar";
+import StatusIcon from "../StatusIcon";
 
 interface ViewTaskDialogProps {
   id: number | undefined;

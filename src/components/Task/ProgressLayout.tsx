@@ -1,3 +1,4 @@
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import {
   Box,
   Card,
@@ -8,207 +9,215 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
-import PendingIcon from "@mui/icons-material/Pending";
-import DoneIcon from "@mui/icons-material/Done";
-import TimelineIcon from "@mui/icons-material/Timeline";
-import ClearIcon from "@mui/icons-material/Clear";
-import AddIcon from "@mui/icons-material/Add";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
-import { useAppSelector, useAppDispatch } from "../../redux/store";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { StatusTask, Task } from "../../types/Task";
-import { ReactNode } from "react";
-
-const renderStatusIcon = (status: StatusTask) => {
-  switch (status) {
-    case "DONE":
-      return (
-        <Grid container alignItems={"center"}>
-          <Grid>
-            <Box
-              component="span"
-              sx={{ color: "success.main", margin: "12px" }}
-            >
-              {status}
-            </Box>
-          </Grid>
-          <Grid>
-            <DoneIcon></DoneIcon>
-          </Grid>
-        </Grid>
-      );
-
-    case "PROCESSING":
-      return (
-        <Grid container alignItems={"center"}>
-          <Grid>
-            <Box component="span" sx={{ color: "info.main", margin: "12px" }}>
-              {status}
-            </Box>
-          </Grid>
-          <Grid>
-            <TimelineIcon></TimelineIcon>
-          </Grid>
-        </Grid>
-      );
-    case "NOT_START":
-      return (
-        <Grid container alignItems={"center"}>
-          <Grid>
-            <Box
-              component="span"
-              sx={{ color: "text.disabled", margin: "12px" }}
-            >
-              {status}
-            </Box>
-          </Grid>
-          <Grid>
-            <PendingIcon color="info"></PendingIcon>
-          </Grid>
-        </Grid>
-      );
-    case "FAILED":
-      return (
-        <Grid container alignItems={"center"}>
-          <Grid>
-            <Box component="span" sx={{ color: "error.main", margin: "12px" }}>
-              {status}
-            </Box>
-          </Grid>
-          <Grid>
-            <ClearIcon></ClearIcon>
-          </Grid>
-        </Grid>
-      );
-  }
-};
+import { useRef, useState } from "react";
+import { updateStatus } from "../../redux/features/TaskSlice";
 
 interface ListTaskProps {
   handleOpenAddDialog: () => void;
   handleOpenViewDialog: (id: number | undefined) => void;
 }
 
-const renderListTaskWithStatus = (
-  tasks: Task[],
-  status: StatusTask,
-  handleOpenViewDialog: (id: number | undefined) => void
-) => {
-  let checkHaveStatus;
-  return (
-    <>
-      {tasks.map((task, index) => {
-        if (task.status === status) {
-          checkHaveStatus = true;
-          return (
-            <Box key={index} boxShadow={6} sx={{ borderRadius: "8px", mb: 3 }}>
-              <Card variant="outlined" sx={{ borderRadius: "8px" }}>
-                <CardActionArea
-                  sx={{ overflow: "hidden", borderRadius: "8px" }}
-                  onClick={() => {
-                    console.log("Open view dialog...");
-                    handleOpenViewDialog(task.id);
-                  }}
-                >
-                  <CardMedia
-                    sx={{ borderTopRadius: "8px" }}
-                    component="img"
-                    height="120px"
-                    image={
-                      task.imgUrl || process.env.PUBLIC_URL + "/img/task.jpg"
-                    }
-                    alt="task img"
-                  />
-                  <CardContent sx={{ textAlign: "left" }}>
-                    <Typography variant="h6" component="span">
-                      {task.title}
-                    </Typography>
-                    <Grid
-                      container
-                      justifyContent={"flex-start"}
-                      wrap="wrap"
-                      gap={1.5}
-                      sx={{
-                        py: 1,
-                      }}
-                    >
-                      {task.categories?.map((category) => (
-                        <Chip
-                          key={category.id}
-                          label={category.name}
-                          onClick={() => {}}
-                        />
-                      ))}
-                    </Grid>
-
-                    <Grid
-                      container
-                      justifyContent={"flex-end"}
-                      wrap="wrap"
-                      gap={1.5}
-                      sx={{
-                        py: 1,
-                      }}
-                    >
-                      {task.assignMember?.map((member) => (
-                        <Chip
-                          size={"small"}
-                          key={member.id}
-                          label={member.name}
-                          onClick={() => {}}
-                        />
-                      ))}
-                    </Grid>
-                    <Grid
-                      container
-                      justifyContent={"flex-start"}
-                      alignItems={"center"}
-                      wrap="wrap"
-                      gap={1.5}
-                      sx={{
-                        py: 1,
-                      }}
-                    >
-                      <AccessTimeIcon color="warning" />
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        fontStyle={"italic"}
-                      >
-                        Dec 23
-                      </Typography>
-                    </Grid>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Box>
-          );
-        }
-      })}
-      {!checkHaveStatus && (
-        <Typography
-          variant="subtitle1"
-          component="div"
-          sx={{ textAlign: "center", color: "rgba(0,0,0,0.5)" }}
-        >
-          No task here
-        </Typography>
-      )}
-    </>
-  );
-};
-
 export default function ProgressLayout(props: ListTaskProps) {
-  const tasks = useAppSelector((state) => state.task.tasks);
   const dispatch = useAppDispatch();
+  const tasks = useAppSelector((state) => state.task.tasks);
+
+  const [currentTaskDragId, setCurrentTaskDragId] = useState<number>();
+  const [newStatus, setNewStatus] = useState<StatusTask>();
+  const [dragOverStatus, setDragOverStatus] = useState<
+    StatusTask | undefined
+  >();
+
+  const handleUpdateStatusTask = (id: number, newStatus: StatusTask) => {
+    dispatch(updateStatus({ id, newStatus }));
+  };
+
+  const handleDragStart = (
+    event: React.DragEvent<HTMLDivElement>,
+    idCurrentTask: number | undefined
+  ) => {
+    if (idCurrentTask !== undefined) {
+      console.log(`dragStart${idCurrentTask}`);
+      setCurrentTaskDragId(idCurrentTask);
+    }
+  };
+
+  const handleDragEnter = (
+    event: React.DragEvent<HTMLDivElement>,
+    newStatus: StatusTask
+  ) => {
+    setNewStatus(newStatus);
+  };
+
+  const handleDragEnd = () => {
+    if (currentTaskDragId !== undefined && newStatus !== undefined) {
+      handleUpdateStatusTask(currentTaskDragId, newStatus);
+      setDragOverStatus(undefined);
+    }
+  };
+
+  // useEffect(() => {
+
+  // }, [third])
+
+  // render function
+  const renderListTaskWithStatus = (
+    tasks: Task[],
+    status: StatusTask,
+    handleOpenViewDialog: (id: number | undefined) => void
+  ) => {
+    let checkHaveTask;
+    return (
+      <Box
+        sx={{ backgroundColor: "#F8F8F8", height: "auto" }}
+        borderRadius={1}
+        padding={2}
+        onDragOver={(event: React.DragEvent<HTMLDivElement>) => {
+          setDragOverStatus(status);
+        }}
+        border={status === dragOverStatus ? "2px dashed #1976d2" : ""}
+        onDragEnter={(event: React.DragEvent<HTMLDivElement>) => {
+          handleDragEnter(event, status);
+        }}
+        onDragEnd={() => {
+          handleDragEnd();
+        }}
+      >
+        {tasks.map((task, index) => {
+          if (task.status === status) {
+            checkHaveTask = true;
+            return (
+              <Box
+                key={index}
+                boxShadow={6}
+                sx={{ borderRadius: "8px", mb: 3 }}
+              >
+                <Card variant="outlined" sx={{ borderRadius: "8px" }}>
+                  <div
+                    draggable={true}
+                    onDragStart={(event: React.DragEvent<HTMLDivElement>) => {
+                      handleDragStart(event, task?.id);
+                    }}
+                  >
+                    <CardActionArea
+                      sx={{ overflow: "hidden", borderRadius: "8px" }}
+                      onClick={() => {
+                        console.log("Open view dialog...");
+                        handleOpenViewDialog(task.id);
+                      }}
+                      draggable={false}
+                    >
+                      <CardMedia
+                        sx={{ borderTopRadius: "8px" }}
+                        component="img"
+                        height="120px"
+                        image={
+                          task.imgUrl ||
+                          process.env.PUBLIC_URL + "/img/task.jpg"
+                        }
+                        alt="task img"
+                      />
+                      <CardContent sx={{ textAlign: "left" }}>
+                        <Typography variant="h6" component="span">
+                          {task.title}
+                        </Typography>
+                        <Grid
+                          container
+                          justifyContent={"flex-start"}
+                          wrap="wrap"
+                          gap={1.5}
+                          sx={{
+                            py: 1,
+                          }}
+                        >
+                          {task.categories?.map((category) => (
+                            <Chip
+                              key={category.id}
+                              label={category.name}
+                              onClick={() => {}}
+                              color="info"
+                            />
+                          ))}
+                        </Grid>
+
+                        <Grid
+                          container
+                          justifyContent={"flex-end"}
+                          wrap="wrap"
+                          gap={1.5}
+                          sx={{
+                            py: 1,
+                          }}
+                        >
+                          {task.assignMember?.map((member) => (
+                            <Chip
+                              size={"small"}
+                              key={member.id}
+                              label={member.name}
+                              onClick={() => {}}
+                            />
+                          ))}
+                        </Grid>
+                        <Grid
+                          container
+                          justifyContent={"flex-start"}
+                          alignItems={"center"}
+                          wrap="wrap"
+                          gap={1.5}
+                          sx={{
+                            py: 1,
+                          }}
+                        >
+                          <AccessTimeIcon color="warning" />
+                          <Typography
+                            component="span"
+                            variant="body2"
+                            fontStyle={"italic"}
+                          >
+                            Dec 23
+                          </Typography>
+                        </Grid>
+                      </CardContent>
+                    </CardActionArea>
+                  </div>
+                </Card>
+              </Box>
+            );
+          }
+        })}
+        {!checkHaveTask && (
+          <Grid
+            container
+            alignItems={"center"}
+            justifyContent={"center"}
+            sx={{ minHeight: "180px", width: "100%" }}
+          >
+            <Typography
+              variant="subtitle1"
+              component="div"
+              sx={{
+                color: "rgba(0,0,0,0.5)",
+              }}
+            >
+              No task here
+            </Typography>
+          </Grid>
+        )}
+      </Box>
+    );
+  };
+
   return (
-    <Grid
-      container
-      flexDirection={"row"}
-    >
+    <Grid container flexDirection={"row"}>
+        <Typography variant={"subtitle1"} marginLeft={6} color={'secondary'}>
+          Notice : You can drag and drop task to change it' status
+        </Typography>
       <Grid
         xs={6}
         container
-        spacing={12}
+        spacing={6}
         sx={{ margin: "0", width: "100%" }}
         alignItems="stretch"
       >
@@ -220,14 +229,11 @@ export default function ProgressLayout(props: ListTaskProps) {
           >
             Started
           </Typography>
-          <Box sx={{ backgroundColor: "#F8F8F8" }} borderRadius={1} padding={2}>
-            {renderListTaskWithStatus(
-              tasks,
-              "NOT_START",
-              props.handleOpenViewDialog
-            )}
-            ;
-          </Box>
+          {renderListTaskWithStatus(
+            tasks,
+            "NOT_START",
+            props.handleOpenViewDialog
+          )}
         </Grid>
         <Grid xs={12} sm={12} md={6} lg={4}>
           <Typography
@@ -237,14 +243,11 @@ export default function ProgressLayout(props: ListTaskProps) {
           >
             Processing
           </Typography>
-          <Box sx={{ backgroundColor: "#F8F8F8" }} borderRadius={1} padding={2}>
-            {renderListTaskWithStatus(
-              tasks,
-              "PROCESSING",
-              props.handleOpenViewDialog
-            )}
-            ;
-          </Box>
+          {renderListTaskWithStatus(
+            tasks,
+            "PROCESSING",
+            props.handleOpenViewDialog
+          )}
         </Grid>
         <Grid xs={12} sm={12} md={6} lg={4}>
           <Typography
@@ -254,14 +257,7 @@ export default function ProgressLayout(props: ListTaskProps) {
           >
             Done
           </Typography>
-          <Box sx={{ backgroundColor: "#F8F8F8" }} borderRadius={1} padding={2}>
-            {renderListTaskWithStatus(
-              tasks,
-              "DONE",
-              props.handleOpenViewDialog
-            )}
-            ;
-          </Box>
+          {renderListTaskWithStatus(tasks, "DONE", props.handleOpenViewDialog)}
         </Grid>
       </Grid>
       <Grid
@@ -279,14 +275,12 @@ export default function ProgressLayout(props: ListTaskProps) {
           >
             Failed
           </Typography>
-          <Box sx={{ backgroundColor: "#F8F8F8" }} borderRadius={1} padding={2}>
-            {renderListTaskWithStatus(
-              tasks,
-              "FAILED",
-              props.handleOpenViewDialog
-            )}
-            ;
-          </Box>
+
+          {renderListTaskWithStatus(
+            tasks,
+            "FAILED",
+            props.handleOpenViewDialog
+          )}
         </Grid>
       </Grid>
     </Grid>

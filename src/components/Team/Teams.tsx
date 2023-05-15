@@ -52,6 +52,7 @@ export default function Teams() {
 
   const handleAddTeam = (team: Team) => {
     dispatch(addTeam({ addTeam: team }));
+    console.log(JSON.stringify(team));
     dispatch(sendNotification({ message: "Add team successfully " }));
     handleCloseAddTeamDialog();
   };

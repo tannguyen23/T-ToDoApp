@@ -1,9 +1,8 @@
-import { FC, ReactNode, Suspense, lazy } from "react";
-import { useLocation } from "react-router-dom";
-import { PATH_AUTH, PATH_PAGE, PATH_USER } from "./path";
-import LoadingPage from "../pages/LoadingPage";
+import { Suspense, lazy } from "react";
 import AuthGuard from "../guards/AuthGuard";
 import GuestGuard from "../guards/GuestGuard";
+import LoadingPage from "../pages/LoadingPage";
+import { PATH_AUTH, PATH_PAGE, PATH_USER } from "./path";
 
 interface Route {
   key: string;
