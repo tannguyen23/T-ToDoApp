@@ -53,6 +53,41 @@ export default function Login() {
     <MyContainer>
       <Box
         boxShadow={10}
+        sx={{
+          margin: 2,
+          padding: 5,
+          borderRadius: "3px",
+          background: "#ffffff",
+          alignSelf: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography
+          variant="body2"
+          component={"div"}
+          sx={{ marginY: "8px" }}
+          fontWeight={"bold"}
+          color={"primary"}
+        >
+          Demo Account
+        </Typography>
+        <Typography
+          variant="subtitle2"
+          component={"div"}
+          sx={{ marginY: "8px" }}
+        >
+          Username : demo
+        </Typography>
+        <Typography
+          variant="subtitle2"
+          component={"div"}
+          sx={{ marginY: "8px" }}
+        >
+          Password : demo@todo
+        </Typography>
+      </Box>
+      <Box
+        boxShadow={10}
         sx={{ borderRadius: "8px", background: "#ffffff", alignSelf: "center" }}
       >
         <Container style={{ padding: 0 }}>
@@ -66,8 +101,9 @@ export default function Login() {
                 component={"div"}
                 sx={{ marginY: "8px" }}
               >
-                Please enter your detail{" "}
+                Please enter your detail
               </Typography>
+
               <FormControl sx={{ paddingY: "8px", marginY: "8px" }} fullWidth>
                 <TextField
                   id="username"
@@ -160,7 +196,7 @@ export default function Login() {
                 </Link>
               </Grid>
             </Grid>
-            <Grid>
+            <Grid display={{ xs: "none", md: "flex" }}>
               <Box
                 sx={{
                   // height: 570,
@@ -177,6 +213,7 @@ export default function Login() {
           </Grid>
         </Container>
       </Box>
+
       <Footer />
     </MyContainer>
   );
