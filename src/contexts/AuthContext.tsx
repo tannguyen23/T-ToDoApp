@@ -47,6 +47,7 @@ export default function AuthProvider(props: AuthProviderProps) {
     localStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
   }, [isLoggedIn]);
 
+
   const value: AuthContextType = {
     authUser,
     setAuthUser,

@@ -8,7 +8,7 @@ export default function Footer() {
         alignSelf: "flex-end",
         position: "absolute",
         width: "100%",
-        backgroundColor: "#2476D2",
+        backgroundColor: "primary.main",
       }}
     >
       <Box sx={{ alignSelf: "center", width: "100%", textAlign: "right" }}>

@@ -1,5 +1,5 @@
 export type Member = {
-    id : number,
+    id? : number,
     name : string,
-    avatar : string,
+    avatar? : string,
 }

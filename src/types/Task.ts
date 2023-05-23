@@ -2,14 +2,15 @@ import { Category } from "./Category";
 import { Member } from "./Member";
 
 export type Task = {
-  id?: number;
+  _id? : string;
+  id?: string;
   title: string;
   imgUrl? : string;
   description: string;
   timeStart: string ;
   timeEnd: string;
   categories : Category[];
-  assignMember : Member[];
+  members : Member[];
   status: StatusTask;
 };
 

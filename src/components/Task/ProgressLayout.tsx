@@ -6,37 +6,41 @@ import {
   CardContent,
   CardMedia,
   Chip,
+  Skeleton,
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 
+import { useState } from "react";
+import { updateStatus } from "../../redux/features/TaskSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { StatusTask, Task } from "../../types/Task";
-import { useRef, useState } from "react";
-import { updateStatus } from "../../redux/features/TaskSlice";
+import { convertStrDateToMonthDayString } from "../../utils/convert";
+import LoadingAction from "../LoadingAction";
 
 interface ListTaskProps {
   handleOpenAddDialog: () => void;
-  handleOpenViewDialog: (id: number | undefined) => void;
+  handleOpenViewDialog: (id: string | undefined) => void;
 }
 
 export default function ProgressLayout(props: ListTaskProps) {
   const dispatch = useAppDispatch();
   const tasks = useAppSelector((state) => state.task.tasks);
+  const isLoadingList = useAppSelector((state) => state.task.isLoading);
 
-  const [currentTaskDragId, setCurrentTaskDragId] = useState<number>();
+  const [currentTaskDragId, setCurrentTaskDragId] = useState<string>();
   const [newStatus, setNewStatus] = useState<StatusTask>();
   const [dragOverStatus, setDragOverStatus] = useState<
     StatusTask | undefined
   >();
 
-  const handleUpdateStatusTask = (id: number, newStatus: StatusTask) => {
+  const handleUpdateStatusTask = (id: string, newStatus: StatusTask) => {
     dispatch(updateStatus({ id, newStatus }));
   };
 
   const handleDragStart = (
     event: React.DragEvent<HTMLDivElement>,
-    idCurrentTask: number | undefined
+    idCurrentTask: string | undefined
   ) => {
     if (idCurrentTask !== undefined) {
       console.log(`dragStart${idCurrentTask}`);
@@ -66,7 +70,7 @@ export default function ProgressLayout(props: ListTaskProps) {
   const renderListTaskWithStatus = (
     tasks: Task[],
     status: StatusTask,
-    handleOpenViewDialog: (id: number | undefined) => void
+    handleOpenViewDialog: (id: string | undefined) => void
   ) => {
     let checkHaveTask;
     return (
@@ -151,7 +155,7 @@ export default function ProgressLayout(props: ListTaskProps) {
                             py: 1,
                           }}
                         >
-                          {task.assignMember?.map((member) => (
+                          {task.members?.map((member) => (
                             <Chip
                               size={"small"}
                               key={member.id}
@@ -176,7 +180,7 @@ export default function ProgressLayout(props: ListTaskProps) {
                             variant="body2"
                             fontStyle={"italic"}
                           >
-                            Dec 23
+                            {convertStrDateToMonthDayString(task.timeEnd)}
                           </Typography>
                         </Grid>
                       </CardContent>
@@ -211,9 +215,9 @@ export default function ProgressLayout(props: ListTaskProps) {
 
   return (
     <Grid container flexDirection={"row"}>
-        <Typography variant={"subtitle1"} marginLeft={6} color={'secondary'}>
-          Notice : You can drag and drop task to change it' status
-        </Typography>
+      <Typography variant={"subtitle1"} marginLeft={6} color={"warning.main"}>
+        Notice : You can drag and drop task to change it' status
+      </Typography>
       <Grid
         xs={6}
         container
@@ -229,10 +233,27 @@ export default function ProgressLayout(props: ListTaskProps) {
           >
             Started
           </Typography>
-          {renderListTaskWithStatus(
-            tasks,
-            "NOT_START",
-            props.handleOpenViewDialog
+          {isLoadingList ? (
+            <Grid
+              container
+              alignItems={"center"}
+              justifyContent={"center"}
+              sx={{ minHeight: "180px", width: "100%" }}
+            >
+              <Skeleton
+                variant="rounded"
+                width={"100%"}
+                height={"180px"}
+                sx={{ p: 2 }}
+                animation={"wave"}
+              />
+            </Grid>
+          ) : (
+            renderListTaskWithStatus(
+              tasks,
+              "NOT_START",
+              props.handleOpenViewDialog
+            )
           )}
         </Grid>
         <Grid xs={12} sm={12} md={6} lg={4}>
@@ -243,10 +264,27 @@ export default function ProgressLayout(props: ListTaskProps) {
           >
             Processing
           </Typography>
-          {renderListTaskWithStatus(
-            tasks,
-            "PROCESSING",
-            props.handleOpenViewDialog
+          {isLoadingList ? (
+            <Grid
+              container
+              alignItems={"center"}
+              justifyContent={"center"}
+              sx={{ minHeight: "180px", width: "100%" }}
+            >
+              <Skeleton
+                variant="rounded"
+                width={"100%"}
+                height={"180px"}
+                sx={{ p: 2 }}
+                animation={"wave"}
+              />
+            </Grid>
+          ) : (
+            renderListTaskWithStatus(
+              tasks,
+              "PROCESSING",
+              props.handleOpenViewDialog
+            )
           )}
         </Grid>
         <Grid xs={12} sm={12} md={6} lg={4}>
@@ -257,7 +295,24 @@ export default function ProgressLayout(props: ListTaskProps) {
           >
             Done
           </Typography>
-          {renderListTaskWithStatus(tasks, "DONE", props.handleOpenViewDialog)}
+          {isLoadingList ? (
+            <Grid
+              container
+              alignItems={"center"}
+              justifyContent={"center"}
+              sx={{ minHeight: "180px", width: "100%" }}
+            >
+              <Skeleton
+                variant="rounded"
+                width={"100%"}
+                height={"180px"}
+                sx={{ p: 2 }}
+                animation={"wave"}
+              />
+            </Grid>
+          ) : (
+            renderListTaskWithStatus(tasks, "DONE", props.handleOpenViewDialog)
+          )}
         </Grid>
       </Grid>
       <Grid
@@ -275,11 +330,27 @@ export default function ProgressLayout(props: ListTaskProps) {
           >
             Failed
           </Typography>
-
-          {renderListTaskWithStatus(
-            tasks,
-            "FAILED",
-            props.handleOpenViewDialog
+          {isLoadingList ? (
+            <Grid
+              container
+              alignItems={"center"}
+              justifyContent={"center"}
+              sx={{ minHeight: "180px", width: "100%" }}
+            >
+              <Skeleton
+                variant="rounded"
+                width={"100%"}
+                height={"180px"}
+                sx={{ p: 2 }}
+                animation={"wave"}
+              />
+            </Grid>
+          ) : (
+            renderListTaskWithStatus(
+              tasks,
+              "FAILED",
+              props.handleOpenViewDialog
+            )
           )}
         </Grid>
       </Grid>

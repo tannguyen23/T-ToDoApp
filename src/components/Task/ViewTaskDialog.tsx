@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { sendNotification } from "../../redux/features/NotificationSlice";
-import { updateStatus } from "../../redux/features/TaskSlice";
+import { updateStatus, updateStatusTaskAsync } from "../../redux/features/TaskSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { Category } from "../../types/Category";
 import { Member } from "../../types/Member";
@@ -24,20 +24,24 @@ import { StatusTask, Task } from "../../types/Task";
 import DeleteConfirmDialog from "../DeleteConfirmDialog";
 import ProgressBar from "../ProgressBar/ProgressBar";
 import StatusIcon from "../StatusIcon";
+import { convertStrDateToVieStringDate } from "../../utils/convert";
+import EditTaskDialog from "./EditTaskDialog";
 
 interface ViewTaskDialogProps {
-  id: number | undefined;
+  id: string | undefined;
   open: boolean;
   onClose: () => void;
-  onDelete: (id: number) => void;
+  onClickUpdate: () => void;
+  onUpdateStatus: (id : string , newStatus : StatusTask) => void;
+  onDelete: (id: string) => void;
 }
 export default function ViewTaskDialog(props: ViewTaskDialogProps) {
-  const { id } = props;
+  const { id, open, onDelete, onClickUpdate, onUpdateStatus } = props;
   const dispatch = useAppDispatch();
-  const detail: Task | undefined = useAppSelector((state ) =>
+
+  const detail: Task | undefined = useAppSelector((state) =>
     state.task.tasks.find((task: Task) => task.id === id)
   );
-  const { open } = props;
   const [openRemoveConfirmDialog, setOpenRemoveConfirmDialog] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -61,29 +65,26 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
 
   const handleDeleteTask = () => {
     if (id !== undefined) {
-      props.onDelete(id);
+      onDelete(id);
       handleCloseRemoveConfirmDialog();
     }
   };
 
   const handleUpdateStatus = (newStatus: StatusTask) => {
     if (id !== undefined) {
-      setStatus(newStatus);
-      dispatch(updateStatus({ id, newStatus }));
-      dispatch(sendNotification({ message: "Update status successfully" }));
+      onUpdateStatus(id, newStatus);
     }
   };
 
   useEffect(() => {
     if (detail !== undefined) {
-      console.log("Task detail");
       setTitle(detail.title);
       setDescription(detail.description);
       setImgUrl(detail.imgUrl);
       setTimeStart(detail.timeStart);
       setTimeEnd(detail.timeEnd);
       setCategories(detail.categories);
-      setMembers(detail.assignMember);
+      setMembers(detail.members);
       setStatus(detail.status);
     }
   }, [id]);
@@ -95,9 +96,17 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
           <CardHeader
             action={
               <>
-                <IconButton aria-label="settings" color="primary">
-                  <EditIcon />
-                </IconButton>
+                <Button
+                  variant="outlined"
+                  aria-label="update"
+                  color="primary"
+                  onClick={() => {
+                    onClickUpdate();
+                  }}
+                  endIcon={<EditIcon />}
+                >
+                  Edit
+                </Button>
               </>
             }
           ></CardHeader>
@@ -132,7 +141,7 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
           </Typography>
           {description}
         </Typography>
-        <Grid sx={{ my: 1 }}>
+        <Grid sx={{ my: 1 }} >
           <ProgressBar
             updateStatus={(newStatus: StatusTask) => {
               handleUpdateStatus(newStatus);
@@ -198,7 +207,9 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
                   borderRadius: "16px",
                 }}
               >
-                <Typography variant="body2">{timeStart}</Typography>
+                <Typography variant="body2">
+                  {convertStrDateToVieStringDate(timeStart)}
+                </Typography>
               </Box>
               <Box
                 component="span"
@@ -209,7 +220,9 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
                   borderRadius: "16px",
                 }}
               >
-                <Typography variant="body2">{timeEnd}</Typography>
+                <Typography variant="body2">
+                  {convertStrDateToVieStringDate(timeEnd)}
+                </Typography>
               </Box>
             </Grid>
           </Grid>

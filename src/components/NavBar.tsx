@@ -121,6 +121,7 @@ export default function NavBar() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <ListAltIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+          {/* <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="" /> */}
           <Typography
             variant="h6"
             noWrap

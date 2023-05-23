@@ -1,33 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import CloseIcon from "@mui/icons-material/Close";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import Button from "@mui/material/Button";
 
 import { sendNotification } from "../../redux/features/NotificationSlice";
-import { addTask, deleteTask } from "../../redux/features/TaskSlice";
-import { useAppDispatch } from "../../redux/store";
-import { Task } from "../../types/Task";
-
 import {
-  Box,
-  Chip,
-  Dialog,
-  IconButton
-} from "@mui/material";
+  addTask,
+  addTaskAsync,
+  deleteTask,
+  deleteTaskByIdAsync,
+  getListTaskAsync,
+  getTaskByIdAsync,
+  loadAllTask,
+  updateStatusTaskAsync,
+  updateTaskByIdAsync,
+} from "../../redux/features/TaskSlice";
+import { useAppDispatch } from "../../redux/store";
+import { StatusTask, Task } from "../../types/Task";
+
+import { Box, Chip, Dialog, IconButton } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import AddTaskDialog from "./AddTaskDialog";
 import NavBarTask from "./NavBarTask";
 import ProgressLayout from "./ProgressLayout";
 import ViewTaskDialog from "./ViewTaskDialog";
+import { finishAction, startAction } from "../../redux/features/ActionSlice";
+import EditTaskDialog from "./EditTaskDialog";
 
 export default function Tasks() {
   const dispatch = useAppDispatch();
 
   const [openAddTaskDialog, setOpenAddTaskDialog] = useState(false);
   const [openViewTaskDialog, setOpenViewTaskDialog] = useState(false);
+  const [openEditTaskDialog, setOpenEditTaskDialog] = useState(false);
   const [openTodoTaskDialog, setOpenTodoTaskDialog] = useState(false);
-  const [idTaskView, setIdTaskView] = useState<number | undefined>();
+  const [idTaskView, setIdTaskView] = useState<string | undefined>();
 
   const handleClickOpenAddTaskDialog = () => {
     setOpenAddTaskDialog(true);
@@ -45,6 +53,21 @@ export default function Tasks() {
     setOpenViewTaskDialog(false);
   };
 
+  const handleClickOpenEditTaskDialog = () => {
+    handleCloseViewTaskDialog();
+    if (idTaskView !== undefined) {
+      dispatch(startAction());
+      dispatch(getTaskByIdAsync(idTaskView)).then(() => {
+        setOpenEditTaskDialog(true);
+        dispatch(finishAction());
+      });
+    }
+  };
+
+  const handleCloseEditTaskDialog = () => {
+    setOpenEditTaskDialog(false);
+  };
+
   const handleClickOpenTodoTaskDialog = () => {
     setOpenTodoTaskDialog(true);
   };
@@ -54,16 +77,47 @@ export default function Tasks() {
   };
 
   const handleAddTask = (task: Task) => {
-    dispatch(addTask({ addTask: task }));
-    dispatch(sendNotification({ message: "Add task successfully " }));
-    handleCloseAddTaskDialog();
+    dispatch(startAction());
+    dispatch(addTaskAsync(task)).then(() => {
+      dispatch(getListTaskAsync());
+      dispatch(sendNotification({ message: "Add task successfully " }));
+      dispatch(finishAction());
+      handleCloseAddTaskDialog();
+    });
   };
 
-  const handleRemoveTask = (deleteTaskId: number) => {
-    dispatch(deleteTask({ deleteTaskId }));
-    dispatch(sendNotification({ message: "Delete task successfully " }));
-    handleCloseViewTaskDialog();
-  }
+  const handleEditTask = (id: string, task: Task) => {
+    dispatch(startAction());
+    dispatch(updateTaskByIdAsync({ id, newTask: task })).then(() => {
+      dispatch(getListTaskAsync());
+      dispatch(sendNotification({ message: "Update task successfully " }));
+      dispatch(finishAction());
+      handleCloseEditTaskDialog();
+    });
+  };
+
+  const handleUpdateStatus = (id: string, newStatus: StatusTask) => {
+    dispatch(startAction());
+    dispatch(updateStatusTaskAsync({ id, newStatus })).then(() => {
+      dispatch(getListTaskAsync());
+      dispatch(sendNotification({ message: "Update status successfully " }));
+      dispatch(finishAction());
+    });
+  };
+
+  const handleRemoveTask = (deleteTaskId: string) => {
+    dispatch(startAction());
+    dispatch(deleteTaskByIdAsync(deleteTaskId)).then(() => {
+      dispatch(getListTaskAsync());
+      dispatch(sendNotification({ message: "Delete task successfully " }));
+      dispatch(finishAction());
+      handleCloseViewTaskDialog();
+    });
+  };
+
+  useEffect(() => {
+    dispatch(getListTaskAsync());
+  }, []);
 
   return (
     <Grid
@@ -81,7 +135,7 @@ export default function Tasks() {
         sx={{
           display: { xs: "none", md: "flex", lg: "flex", xl: "flex" },
           position: "fixed",
-          backgroundColor: "#1D267D",
+          backgroundColor: "secondary.dark",
           padding: 1,
           height: "100%",
         }}
@@ -184,7 +238,7 @@ export default function Tasks() {
             display={"flex"}
             rowSpacing={2}
           >
-            <Grid container gap={2} >
+            <Grid container gap={2}>
               <Chip label="Today" variant="filled" color="primary"></Chip>
               <Chip
                 label="This month"
@@ -211,7 +265,8 @@ export default function Tasks() {
           handleOpenAddDialog={() => {
             handleClickOpenAddTaskDialog();
           }}
-          handleOpenViewDialog={(id: number | undefined) => {
+          handleOpenViewDialog={(id: string | undefined) => {
+            console.log("id :" + id);
             setIdTaskView(id);
             handleClickOpenViewTaskDialog();
           }}
@@ -232,7 +287,28 @@ export default function Tasks() {
             onClose={() => {
               handleCloseViewTaskDialog();
             }}
+            onClickUpdate={() => {
+              handleClickOpenEditTaskDialog();
+            }}
+            onUpdateStatus={(id: string, newStatus: StatusTask) => {
+              handleUpdateStatus(id, newStatus);
+            }}
             onDelete={(id) => handleRemoveTask(id)}
+          />
+        ) : (
+          <></>
+        )}
+
+        {openEditTaskDialog ? (
+          <EditTaskDialog
+            id={idTaskView}
+            open={openEditTaskDialog}
+            onClose={() => {
+              handleCloseEditTaskDialog();
+            }}
+            editTask={(id: string, task: Task) => {
+              handleEditTask(id, task);
+            }}
           />
         ) : (
           <></>
@@ -240,4 +316,7 @@ export default function Tasks() {
       </Grid>
     </Grid>
   );
+}
+function endAction(): any {
+  throw new Error("Function not implemented.");
 }

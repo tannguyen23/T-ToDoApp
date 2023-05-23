@@ -1,30 +1,31 @@
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  FormControl,
-  TextField,
-  Grid,
-  DialogActions,
-  Button,
   Box,
+  Button,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  Grid,
   InputLabel,
   MenuItem,
   OutlinedInput,
   Select,
+  SelectChangeEvent,
+  TextField,
   Theme,
   useTheme,
-  SelectChangeEvent,
 } from "@mui/material";
-import { DatePicker, LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import { useState } from "react";
-import { Task, StatusTask } from "../../types/Task";
+import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { Category } from "../../types/Category";
-import { useAppSelector } from "../../redux/store";
 import { Member } from "../../types/Member";
+import { StatusTask, Task } from "../../types/Task";
+import { getTaskByIdAsync } from "../../redux/features/TaskSlice";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -46,23 +47,29 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
   };
 }
 
-export interface AddTaskDialogProps {
+export interface EditTaskDialogProps {
+  id: string | undefined;
   open: boolean;
-  addTask: (task: Task) => void;
+  editTask: (id: string, task: Task) => void;
   onClose: () => void;
 }
 
-export default function AddTaskDialog(props: AddTaskDialogProps) {
+export default function EditTaskDialog(props: EditTaskDialogProps) {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
+
   const categories = useAppSelector((state) => state.category.categories);
   const members = useAppSelector((state) => state.member.members);
+  const task = useAppSelector((state) => state.task.currentTask);
 
   const [categoryName, setCategoryName] = useState<string[]>([]);
+  const [categoryNameSelect, setCategoryNameSelect] = useState<string[]>([]);
   const [memberName, setMemberName] = useState<string[]>([]);
-  const { open, addTask } = props;
-
-  const [title, setTitle] = useState("");
-  const [imgUrl , setImgUrl] = useState("");
+  const [memberNameSelect, setMemberNameSelect] = useState<string[]>([]);
+  const { id, open, editTask } = props;
+  const [updateTask, setUpdateTask] = useState<Task>();
+  const [title, setTitle] = useState<string | undefined>("");
+  const [imgUrl, setImgUrl] = useState<string | undefined>("");
   const [description, setDescription] = useState("");
   const [timeStart, setTimeStart] = useState<Dayjs | null | undefined>(dayjs());
   const [timeEnd, setTimeEnd] = useState<Dayjs | null | undefined>(dayjs());
@@ -71,7 +78,7 @@ export default function AddTaskDialog(props: AddTaskDialogProps) {
     props.onClose();
   };
 
-  const handleAddTask = () => {
+  const handleEditTask = () => {
     if (timeStart && timeEnd) {
       const currentCategories: Category[] = [];
       categoryName.map((category: string, index: number) => {
@@ -88,16 +95,18 @@ export default function AddTaskDialog(props: AddTaskDialogProps) {
           // avatar: "/",
         });
       });
-      addTask({
-        title,
-        imgUrl,
-        description,
-        timeStart: timeStart?.format("YYYY-MM-DD"),
-        timeEnd: timeEnd?.format("YYYY-MM-DD"),
-        categories: currentCategories,
-        members: currentMembers,
-        status,
-      });
+      if (id !== undefined && title !== undefined) {
+        editTask(id, {
+          title,
+          imgUrl,
+          description,
+          timeStart: timeStart?.format("YYYY-MM-DD"),
+          timeEnd: timeEnd?.format("YYYY-MM-DD"),
+          categories: currentCategories,
+          members: currentMembers,
+          status,
+        });
+      }
     }
   };
 
@@ -123,9 +132,37 @@ export default function AddTaskDialog(props: AddTaskDialogProps) {
     );
   };
 
+  useEffect(() => {
+    if (id !== undefined) {
+      console.log("getTaskByIdAsync with id : " + id);
+      dispatch(getTaskByIdAsync(id)).then(() => {
+        if (task !== null) {
+          console.log("Edit task: " + JSON.stringify(task));
+          setTitle(task.title);
+          setDescription(task.description);
+          setImgUrl(task.imgUrl);
+          setTimeStart(dayjs(task.timeStart, "YYYY-MM-DD"));
+          setTimeEnd(dayjs(task.timeEnd, "YYYY-MM-DD"));
+          const selectCate: string[] = [];
+          task.categories.map((value)=>{
+            selectCate.push(value.name);
+          });
+          const selectMem : string[] = [];
+          task.members.map((value)=>{
+            selectMem.push(value.name);
+          });
+          setCategoryName(selectCate);
+          setMemberName(selectMem);
+
+          setStatus(task.status);
+        }
+      });
+    }
+  }, []);
+
   return (
     <Dialog onClose={handleClose} open={open} fullWidth maxWidth={"md"}>
-      <DialogTitle>Add a task to do</DialogTitle>
+      <DialogTitle>Edit task </DialogTitle>
       <DialogContent
         sx={{
           padding: "16px",
@@ -174,7 +211,7 @@ export default function AddTaskDialog(props: AddTaskDialogProps) {
           <Grid container justifyContent={"space-between"}>
             <Grid>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker 
+                <DatePicker
                   label="Time Start"
                   value={timeStart}
                   onChange={(newValue: Dayjs | null) => {
@@ -185,7 +222,7 @@ export default function AddTaskDialog(props: AddTaskDialogProps) {
             </Grid>
             <Grid>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker 
+                <DatePicker
                   label="Time end"
                   value={timeEnd}
                   onChange={(newValue: Dayjs | null) => {
@@ -215,7 +252,7 @@ export default function AddTaskDialog(props: AddTaskDialogProps) {
             )}
             MenuProps={MenuProps}
           >
-            {categories.map((category : Category) => (
+            {categories.map((category: Category) => (
               <MenuItem
                 key={category.name}
                 value={category.name}
@@ -262,10 +299,10 @@ export default function AddTaskDialog(props: AddTaskDialogProps) {
           variant="contained"
           color="success"
           onClick={() => {
-            handleAddTask();
+            handleEditTask();
           }}
         >
-          Add
+          Save
         </Button>
         <Button variant="outlined" color="info" onClick={() => handleClose()}>
           Cancel

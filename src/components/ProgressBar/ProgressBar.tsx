@@ -1,4 +1,4 @@
-import { Box, Chip } from "@mui/material";
+import { Box, Chip, Typography } from "@mui/material";
 import { StatusTask } from "../../types/Task";
 import Grid from "@mui/material/Unstable_Grid2";
 import CheckIcon from "@mui/icons-material/Check";
@@ -36,6 +36,10 @@ export default function ProgressBar(props: ProgressBarProps) {
         borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
       }}
     >
+      <Typography variant="subtitle2" color={"warning.light"}>
+        * Notice : Click on status to update *
+      </Typography>
+
       <Grid
         container
         direction="column"

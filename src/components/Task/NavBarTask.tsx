@@ -30,7 +30,7 @@ export default function NavBarTask() {
   };
 
   return (
-    <Grid sx={{height : '100%'}}>
+    <Grid sx={{ height: "100%" }}>
       <Typography
         variant={"h6"}
         sx={{ paddingY: 2, textAlign: "center" }}
@@ -38,15 +38,15 @@ export default function NavBarTask() {
       >
         To - Do Tasks
       </Typography>
-      <Box component={"div"} boxShadow={"1"} sx={{}} ref={containerTodayRef}>
-        {/*  */}
+      <Box component={"div"} sx={{}} ref={containerTodayRef}>
         <Box
-          sx={{ padding: 1, marginY: 1, backgroundColor: "#2733a5" }}
-          borderRadius={2}
+          sx={{ padding: 1, marginY: 1, backgroundColor: "primary.dark" }}
+          borderRadius={1}
         >
           <FormControlLabel
             control={
               <Switch
+                color="info"
                 checked={checkedToday}
                 onChange={() => {
                   handleChangeCheckedToday();
@@ -56,7 +56,7 @@ export default function NavBarTask() {
             label={
               <Typography
                 variant={"body1"}
-                color={"primary.light"}
+                color={"primary.contrastText"}
                 fontWeight={"bold"}
               >
                 Today
@@ -128,7 +128,7 @@ export default function NavBarTask() {
 
         {/*  */}
         <Box
-          sx={{ padding: 1, marginY: 1, backgroundColor: "#2733a5" }}
+          sx={{ padding: 1, marginY: 1, backgroundColor: "primary.dark" }}
           borderRadius={2}
         >
           <FormControlLabel
@@ -143,7 +143,7 @@ export default function NavBarTask() {
             label={
               <Typography
                 variant={"body1"}
-                color={"primary.light"}
+                color={"primary.contrastText"}
                 fontWeight={"bold"}
               >
                 This month
@@ -215,7 +215,7 @@ export default function NavBarTask() {
 
         {/*  */}
         <Box
-          sx={{ padding: 1, marginY: 1, backgroundColor: "#2733a5" }}
+          sx={{ padding: 1, marginY: 1, backgroundColor: "primary.dark" }}
           borderRadius={2}
         >
           <FormControlLabel
@@ -230,7 +230,7 @@ export default function NavBarTask() {
             label={
               <Typography
                 variant={"body1"}
-                color={"primary.light"}
+                color={"primary.contrastText"}
                 fontWeight={"bold"}
               >
                 This week
@@ -261,7 +261,7 @@ export default function NavBarTask() {
                       </Typography>
                     }
                   />
-                  <Divider/>
+                  <Divider />
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -277,7 +277,7 @@ export default function NavBarTask() {
                       </Typography>
                     }
                   />
-                  <Divider/>
+                  <Divider />
                   <FormControlLabel
                     control={
                       <Checkbox

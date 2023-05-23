@@ -82,7 +82,7 @@ const renderStatusIcon = (status: StatusTask) => {
 
 interface ListTaskProps {
   handleOpenAddDialog: () => void;
-  handleOpenViewDialog: (id: number | undefined) => void;
+  handleOpenViewDialog: (id: string | undefined) => void;
 }
 
 export default function ListTask(props: ListTaskProps) {
@@ -138,7 +138,6 @@ export default function ListTask(props: ListTaskProps) {
           sx={{
             border: "2px dashed #1976d2",
             height: "110%",
-            background : '#ffffff'
           }}
           onClick={() => {
             console.log("Open add dialog...");
