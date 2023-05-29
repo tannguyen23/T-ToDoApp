@@ -11,6 +11,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import * as yup from "yup";
 import GoogleIcon from "@mui/icons-material/Google";
 import Grid from "@mui/material/Unstable_Grid2";
 import styled from "styled-components";
@@ -18,6 +19,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PATH_AUTH, PATH_PAGE } from "../routes/path";
 import Footer from "../components/Footer";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { RegisterUser } from "../types/Authentication";
+import { useAppDispatch } from "../redux/store";
+import { registerAsync } from "../redux/features/AuthSlice";
+import { finishAction, startAction } from "../redux/features/ActionSlice";
+import { sendNotification } from "../redux/features/NotificationSlice";
+import { AxiosError } from "axios";
 const MyContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -26,14 +35,100 @@ const MyContainer = styled.div`
   background: #d2d0dd;
 `;
 
+const schema = yup.object({
+  username: yup
+    .string()
+    .required("Should not be empty")
+    .min(6, "At least 6 characters "),
+  password: yup.string().required("Should not be empty"),
+  rePassword: yup
+    .string()
+    .required("Should not be empty")
+    .test(
+      "compare_password",
+      "Password and confirm password must be the same",
+      (value, context) => {
+        if (context.parent.password === value) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    ),
+  fullname: yup.string().required("Should not be empty"),
+  email: yup
+    .string()
+    .required("Should not be empty")
+    .email("Shoud follow email format"),
+  address: yup.string().required("Should not be empty"),
+});
+
+const initValueForm = {
+  username: "",
+  password: "",
+  rePassword: "",
+  fullname: "",
+  email: "",
+  address: "",
+};
+
 export default function Register() {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [address, setAddress] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rePassword, setRePassword] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    setError,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: initValueForm,
+  });
+
+  const onSubmit = handleSubmit((data) => {
+    console.log(JSON.stringify(data));
+    handleRegister();
+  });
+
+  const handleRegister = () => {
+    const username = getValues("username").trim();
+    const fullname = getValues("fullname").trim();
+    const email = getValues("email").trim();
+    const address = getValues("address").trim();
+    const password = getValues("password");
+    const avaUrl = "";
+    dispatch(startAction());
+    dispatch(
+      registerAsync({
+        username,
+        password,
+        fullname,
+        email,
+        address,
+        avaUrl,
+      })
+    ).unwrap().then(() => {
+      dispatch(finishAction());
+      dispatch(sendNotification({ message: "Register account Successfully" }));
+      navigate(PATH_AUTH.login);
+    }).catch((error : AxiosError) => {
+      dispatch(finishAction());
+      // handle error
+      if(error.response?.status === 422 ) {
+        if (error.response.data === 'Username is exist') {
+          setError('username',{message : 'User already exists'});
+        } 
+        if (error.response.data === 'Email is exist') {
+          setError('email',{message : 'Email already exists'});
+        }
+      }
+      dispatch(sendNotification({ message: "Register account failed" }));
+    });
+  };
+
   return (
     <MyContainer>
       <Box
@@ -43,124 +138,123 @@ export default function Register() {
         <Container style={{ padding: 0 }}>
           <Grid container>
             <Grid sx={{ padding: 3 }} xs={6}>
-              <Typography variant="h4" component={"div"} fontWeight={"bold"}>
-                Become a member in To Do App
-              </Typography>
-              <Typography
-                variant="body2"
-                component={"div"}
-                sx={{ marginY: "8px" }}
-              >
-                Please enter your detail
-              </Typography>
-              <FormControl sx={{ paddingY: "8px", marginY: "8px" }} fullWidth>
-                <TextField
-                  id="username"
-                  variant="outlined"
-                  label="User Name"
-                  value={username}
-                  onChange={(event) => {
-                    setUsername(event.target.value);
-                  }}
-                ></TextField>
-              </FormControl>
-              <FormControl sx={{ paddingY: "8px", marginY: "8px" }} fullWidth>
-                <TextField
-                  id="fullname"
-                  variant="outlined"
-                  label="Full Name"
-                  value={fullName}
-                  onChange={(event) => {
-                    setFullName(event.target.value);
-                  }}
-                ></TextField>
-              </FormControl>
-              <FormControl sx={{ paddingY: "8px", marginY: "8px" }} fullWidth>
-                <TextField
-                  id="email"
-                  type="email"
-                  variant="outlined"
-                  label="Email"
-                  value={email}
-                  onChange={(event) => {
-                    setEmail(event.target.value);
-                  }}
-                ></TextField>
-              </FormControl>
-              <FormControl sx={{ paddingY: "8px", marginY: "8px" }} fullWidth>
-                <TextField
-                  id="address"
-                  variant="outlined"
-                  label="Address"
-                  value={address}
-                  onChange={(event) => {
-                    setAddress(event.target.value);
-                  }}
-                ></TextField>
-              </FormControl>
-
-              <FormControl sx={{ paddingY: "8px", marginY: "8px" }} fullWidth>
-                <TextField
-                  id="password"
-                  variant="outlined"
-                  type={"password"}
-                  label="Password"
-                  value={password}
-                  onChange={(event) => {
-                    setPassword(event.target.value);
-                  }}
-                ></TextField>
-              </FormControl>
-              <FormControl sx={{ paddingY: "8px", marginY: "8px" }} fullWidth>
-                <TextField
-                  id="rePassword"
-                  variant="outlined"
-                  type={"rePassword"}
-                  label="Confirm Password"
-                  value={rePassword}
-                  onChange={(event) => {
-                    setRePassword(event.target.value);
-                  }}
-                ></TextField>
-              </FormControl>
-              <Button
-                variant="contained"
-                onClick={(event) => {
+              <form
+                onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
                   event.preventDefault();
-                  navigate(PATH_AUTH.login);
+                  onSubmit();
                 }}
-                fullWidth
-                sx={{ my: 1 }}
               >
-                Sign up
-              </Button>
-
-              <Button
-                variant="outlined"
-                onClick={() => {}}
-                fullWidth
-                sx={{ my: 1 }}
-                endIcon={<GoogleIcon />}
-              >
-                Sign up with google
-              </Button>
-              <Grid textAlign={"left"}>
-                <Typography variant="body2" component="span" sx={{ pr: 1 }}>
-                  Already have account,
+                <Typography variant="h4" component={"div"} fontWeight={"bold"}>
+                  Become a member in To Do App
                 </Typography>
-                <Link
-                  href="#"
+                <Typography
                   variant="body2"
-                  color={"primary"}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    navigate(PATH_AUTH.login);
-                  }}
+                  component={"div"}
+                  sx={{ marginY: "8px" }}
                 >
-                  Sign in
-                </Link>
-              </Grid>
+                  Please enter your detail
+                </Typography>
+                <FormControl sx={{ paddingY: "8px", marginY: "8px" }} fullWidth>
+                  <TextField
+                    {...register("username")}
+                    error={errors.username?.message !== undefined}
+                    helperText={errors.username?.message}
+                    id="username"
+                    variant="outlined"
+                    label="User Name"
+                  ></TextField>
+                </FormControl>
+                <FormControl sx={{ paddingY: "8px", marginY: "8px" }} fullWidth>
+                  <TextField
+                    {...register("fullname")}
+                    error={errors.fullname?.message !== undefined}
+                    helperText={errors.fullname?.message}
+                    id="fullname"
+                    variant="outlined"
+                    label="Full Name"
+                  ></TextField>
+                </FormControl>
+                <FormControl sx={{ paddingY: "8px", marginY: "8px" }} fullWidth>
+                  <TextField
+                    {...register("email")}
+                    error={errors.email?.message !== undefined}
+                    helperText={errors.email?.message}
+                    id="email"
+                    type="email"
+                    variant="outlined"
+                    label="Email"
+                  ></TextField>
+                </FormControl>
+                <FormControl sx={{ paddingY: "8px", marginY: "8px" }} fullWidth>
+                  <TextField
+                    {...register("address")}
+                    error={errors.address?.message !== undefined}
+                    helperText={errors.address?.message}
+                    id="address"
+                    variant="outlined"
+                    label="Address"
+                  ></TextField>
+                </FormControl>
+
+                <FormControl sx={{ paddingY: "8px", marginY: "8px" }} fullWidth>
+                  <TextField
+                    {...register("password")}
+                    error={errors.password?.message !== undefined}
+                    helperText={errors.password?.message}
+                    id="password"
+                    variant="outlined"
+                    type={"password"}
+                    label="Password"
+                  ></TextField>
+                </FormControl>
+                <FormControl sx={{ paddingY: "8px", marginY: "8px" }} fullWidth>
+                  <TextField
+                    {...register("rePassword")}
+                    error={errors.rePassword?.message !== undefined}
+                    helperText={errors.rePassword?.message}
+                    id="rePassword"
+                    variant="outlined"
+                    type={"password"}
+                    label="Confirm Password"
+                  ></TextField>
+                </FormControl>
+                <Button
+                  variant="contained"
+                  type="submit"
+                  fullWidth
+                  sx={{ my: 1 }}
+                >
+                  Sign up
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  onClick={() => {}}
+                  fullWidth
+                  sx={{ my: 1 }}
+                  endIcon={<GoogleIcon />}
+                >
+                  Sign up with google
+                </Button>
+                <Grid textAlign={"left"}>
+                  <Typography variant="body2" component="span" sx={{ pr: 1 }}>
+                    Already have account,
+                  </Typography>
+                  <Link
+                    href="#"
+                    variant="body2"
+                    color={"primary"}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      navigate(PATH_AUTH.login);
+                    }}
+                  >
+                    Sign in
+                  </Link>
+                </Grid>
+              </form>
             </Grid>
+
             <Grid xs={6}>
               <Box
                 sx={{

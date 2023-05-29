@@ -12,11 +12,17 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 
 import { useState } from "react";
-import { updateStatus } from "../../redux/features/TaskSlice";
+import {
+  getListTaskAsync,
+  updateStatus,
+  updateStatusTaskAsync,
+} from "../../redux/features/TaskSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { StatusTask, Task } from "../../types/Task";
 import { convertStrDateToMonthDayString } from "../../utils/convert";
 import LoadingAction from "../LoadingAction";
+import { finishAction, startAction } from "../../redux/features/ActionSlice";
+import { sendNotification } from "../../redux/features/NotificationSlice";
 
 interface ListTaskProps {
   handleOpenAddDialog: () => void;
@@ -35,7 +41,13 @@ export default function ProgressLayout(props: ListTaskProps) {
   >();
 
   const handleUpdateStatusTask = (id: string, newStatus: StatusTask) => {
-    dispatch(updateStatus({ id, newStatus }));
+    dispatch(startAction());
+    dispatch(updateStatusTaskAsync({ id, newStatus })).then(() => {
+      dispatch(getListTaskAsync());
+      dispatch(sendNotification({ message: "Update status successfully " }));
+      dispatch(finishAction());
+    });
+    // dispatch(updateStatus({ id, newStatus }));
   };
 
   const handleDragStart = (
@@ -136,9 +148,9 @@ export default function ProgressLayout(props: ListTaskProps) {
                             py: 1,
                           }}
                         >
-                          {task.categories?.map((category) => (
+                          {task.categories?.map((category, index) => (
                             <Chip
-                              key={category.id}
+                              key={index}
                               label={category.name}
                               onClick={() => {}}
                               color="info"
@@ -155,10 +167,10 @@ export default function ProgressLayout(props: ListTaskProps) {
                             py: 1,
                           }}
                         >
-                          {task.members?.map((member) => (
+                          {task.members?.map((member, index) => (
                             <Chip
+                              key={index}
                               size={"small"}
-                              key={member.id}
                               label={member.name}
                               onClick={() => {}}
                             />

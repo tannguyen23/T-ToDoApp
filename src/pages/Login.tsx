@@ -21,6 +21,10 @@ import Footer from "../components/Footer";
 import { useAuth } from "../contexts/AuthContext";
 import { sendNotification } from "../redux/features/NotificationSlice";
 import { useAppDispatch } from "../redux/store";
+import { loginAsync } from "../redux/features/AuthSlice";
+import { AxiosError, AxiosResponse } from "axios";
+import { finishAction, startAction } from "../redux/features/ActionSlice";
+import { AuthUser } from "../types/Authentication";
 
 const MyContainer = styled.div`
   display: flex;
@@ -40,13 +44,50 @@ export default function Login() {
 
   const handleLoginDemo = () => {
     if (username === "demo" && password === "demo@todo") {
-      setAuthUser({ id: "0", name: "Demo" });
+      setAuthUser({
+        id: "0",
+        username: "Demo",
+        address: "addressTMP",
+        avaUrl: "https://",
+        email: "mail@test.com",
+        fullname: "De mo",
+      });
       setIsLoggedIn(true);
       dispatch(sendNotification({ message: "Login Successfully" }));
       navigate(PATH_USER.task);
     } else {
       dispatch(sendNotification({ message: "Login Failed" }));
     }
+  };
+
+  const handleLogin = () => {
+    dispatch(startAction());
+    dispatch(loginAsync({ username, password }))
+      .unwrap()
+      .then((response : AuthUser) => {
+        const userInfo = response;
+        setAuthUser({
+          id: userInfo._id,
+          username: userInfo.username,
+          address: userInfo.address,
+          avaUrl: userInfo.avaUrl,
+          email: userInfo.email,
+          fullname: userInfo.fullname,
+        });
+        setIsLoggedIn(true);
+        navigate(PATH_USER.task);
+        dispatch(sendNotification({ message: "Login Successfully" }));
+      })
+      .catch((error: AxiosError) => {
+        if (error.response?.status === 401) {
+          dispatch(sendNotification({ message: "Login failed" }));
+        } else {
+          dispatch(sendNotification({ message: "Something went wrong" }));
+        }
+      })
+      .finally(() => {
+        dispatch(finishAction());
+      });
   };
 
   return (
@@ -127,7 +168,7 @@ export default function Login() {
                   }}
                   onKeyDown={(event) => {
                     if (event.key === "Enter") {
-                      handleLoginDemo();
+                      handleLogin();
                     }
                   }}
                 ></TextField>
@@ -162,7 +203,7 @@ export default function Login() {
               <Button
                 variant="contained"
                 onClick={() => {
-                  handleLoginDemo();
+                  handleLogin();
                 }}
                 fullWidth
                 sx={{ my: 1 }}

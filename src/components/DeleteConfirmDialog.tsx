@@ -6,6 +6,7 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 interface DeleteConfirmDialogProps {
   message?: string;
   open: boolean;
@@ -20,19 +21,27 @@ export default function DeleteConfirmDialog(props: DeleteConfirmDialogProps) {
       onClose={onClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      maxWidth={"sm"}
+      fullWidth={true}
     >
-      <DialogTitle id="alert-dialog-title">
-        {"Remove Alert"}
-      </DialogTitle>
+      <DialogTitle id="alert-dialog-title">{"Remove Alert"}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          {message || 'Are you sure to delete this item ?'}
+          {message || "Are you sure to delete this item ?"}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Disagree</Button>
-        <Button onClick={onAccept} autoFocus>
-          Agree
+        <Button variant="outlined" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          onClick={onAccept}
+          autoFocus
+          startIcon={<DeleteIcon />}
+          color="error"
+        >
+          Remove
         </Button>
       </DialogActions>
     </Dialog>
