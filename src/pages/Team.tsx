@@ -1,7 +1,7 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
-import NavBar from "../components/NavBar";
-import Teams from "../components/Team/Teams";
+import NavBar from '../components/NavBar';
+import Teams from '../components/Team/Teams';
 
 const Container = styled.div`
   width: 100vw;

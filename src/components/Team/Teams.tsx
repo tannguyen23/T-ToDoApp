@@ -1,15 +1,16 @@
-import { Button } from "@mui/material";
-import styled from "styled-components";
-import { useAppDispatch } from "../../redux/store";
-import { useState } from "react";
-import { Team } from "../../types/Team";
-import { addTeam, deleteTeam } from "../../redux/features/TeamSlice";
-import { sendNotification } from "../../redux/features/NotificationSlice";
-import AddTeamDialog from "./AddTeamDialog";
-import ListTeam from "./ListTeam";
-import ViewTeamDialog from "./ViewTeamDialog";
-import Grid from "@mui/material/Unstable_Grid2";
-import JoinTeamDialog from "./JoinTeamDialog";
+import { Button } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+import { useState } from 'react';
+import styled from 'styled-components';
+
+import { sendNotification } from '../../redux/features/NotificationSlice';
+import { addTeam, deleteTeam } from '../../redux/features/TeamSlice';
+import { useAppDispatch } from '../../redux/store';
+import { Team } from '../../types/Team';
+import AddTeamDialog from './AddTeamDialog';
+import JoinTeamDialog from './JoinTeamDialog';
+import ListTeam from './ListTeam';
+import ViewTeamDialog from './ViewTeamDialog';
 
 const Container = styled.div`
   padding: 6px;

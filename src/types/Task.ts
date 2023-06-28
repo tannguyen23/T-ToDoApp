@@ -1,5 +1,5 @@
-import { Category } from "./Category";
-import { Member } from "./Member";
+import { Category } from './Category';
+import { Member } from './Member';
 
 export type Task = {
   _id? : string;
@@ -11,6 +11,7 @@ export type Task = {
   timeEnd: string;
   categories : Category[];
   members : Member[];
+  ownerId? : string;
   status: StatusTask;
 };
 

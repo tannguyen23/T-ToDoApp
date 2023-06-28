@@ -1,5 +1,5 @@
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import EditIcon from "@mui/icons-material/Edit";
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
   Button,
@@ -11,21 +11,19 @@ import {
   Dialog,
   DialogContent,
   Grid,
-  IconButton,
   Typography,
-} from "@mui/material";
-import { useEffect, useState } from "react";
-import { sendNotification } from "../../redux/features/NotificationSlice";
-import { updateStatus, updateStatusTaskAsync } from "../../redux/features/TaskSlice";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { Category } from "../../types/Category";
-import { Member } from "../../types/Member";
-import { StatusTask, Task } from "../../types/Task";
-import DeleteConfirmDialog from "../DeleteConfirmDialog";
-import ProgressBar from "../ProgressBar/ProgressBar";
-import StatusIcon from "../StatusIcon";
-import { convertStrDateToVieStringDate } from "../../utils/convert";
-import EditTaskDialog from "./EditTaskDialog";
+} from '@mui/material';
+import { useEffect, useState } from 'react';
+
+import { updateStatus } from '../../redux/features/TaskSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { Category } from '../../types/Category';
+import { Member } from '../../types/Member';
+import { StatusTask, Task } from '../../types/Task';
+import { convertStrDateToVieStringDate } from '../../utils/convert';
+import DeleteConfirmDialog from '../DeleteConfirmDialog';
+import ProgressBar from '../ProgressBar/ProgressBar';
+import StatusIcon from '../StatusIcon';
 
 interface ViewTaskDialogProps {
   id: string | undefined;

@@ -1,12 +1,6 @@
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+
 interface DeleteConfirmDialogProps {
   message?: string;
   open: boolean;

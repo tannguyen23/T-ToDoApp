@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import Login from "../pages/Login";
-import { useNavigate } from "react-router-dom";
+import { ReactNode } from 'react';
+
+import { useAuth } from '../contexts/AuthContext';
+import Login from '../pages/Login';
 
 interface AuthGuardProps {
   children: ReactNode;

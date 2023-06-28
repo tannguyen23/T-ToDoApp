@@ -1,36 +1,22 @@
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import {
-  Box,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Chip,
-  Skeleton,
-  Typography,
-} from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { Box, Card, CardActionArea, CardContent, CardMedia, Chip, Skeleton, Typography } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+import { useState } from 'react';
 
-import { useState } from "react";
-import {
-  getListTaskAsync,
-  updateStatus,
-  updateStatusTaskAsync,
-} from "../../redux/features/TaskSlice";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { StatusTask, Task } from "../../types/Task";
-import { convertStrDateToMonthDayString } from "../../utils/convert";
-import LoadingAction from "../LoadingAction";
-import { finishAction, startAction } from "../../redux/features/ActionSlice";
-import { sendNotification } from "../../redux/features/NotificationSlice";
+import { useAuth } from '../../contexts/AuthContext';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { StatusTask, Task } from '../../types/Task';
+import { convertStrDateToMonthDayString } from '../../utils/convert';
 
 interface ListTaskProps {
   handleOpenAddDialog: () => void;
   handleOpenViewDialog: (id: string | undefined) => void;
+  onUpdateStatus: (id : string , newStatus : StatusTask) => void;
 }
 
 export default function ProgressLayout(props: ListTaskProps) {
   const dispatch = useAppDispatch();
+  const {authUser} = useAuth();
   const tasks = useAppSelector((state) => state.task.tasks);
   const isLoadingList = useAppSelector((state) => state.task.isLoading);
 
@@ -40,15 +26,6 @@ export default function ProgressLayout(props: ListTaskProps) {
     StatusTask | undefined
   >();
 
-  const handleUpdateStatusTask = (id: string, newStatus: StatusTask) => {
-    dispatch(startAction());
-    dispatch(updateStatusTaskAsync({ id, newStatus })).then(() => {
-      dispatch(getListTaskAsync());
-      dispatch(sendNotification({ message: "Update status successfully " }));
-      dispatch(finishAction());
-    });
-    // dispatch(updateStatus({ id, newStatus }));
-  };
 
   const handleDragStart = (
     event: React.DragEvent<HTMLDivElement>,
@@ -69,7 +46,7 @@ export default function ProgressLayout(props: ListTaskProps) {
 
   const handleDragEnd = () => {
     if (currentTaskDragId !== undefined && newStatus !== undefined) {
-      handleUpdateStatusTask(currentTaskDragId, newStatus);
+      props.onUpdateStatus(currentTaskDragId, newStatus);
       setDragOverStatus(undefined);
     }
   };
@@ -85,6 +62,7 @@ export default function ProgressLayout(props: ListTaskProps) {
     handleOpenViewDialog: (id: string | undefined) => void
   ) => {
     let checkHaveTask;
+ 
     return (
       <Box
         sx={{ backgroundColor: "#F8F8F8", height: "auto" }}
@@ -101,6 +79,7 @@ export default function ProgressLayout(props: ListTaskProps) {
           handleDragEnd();
         }}
       >
+        
         {tasks.map((task, index) => {
           if (task.status === status) {
             checkHaveTask = true;

@@ -1,7 +1,9 @@
-import styled from "styled-components";
-import { Box, Button, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { PATH_AUTH, PATH_PAGE } from "../routes/path";
+import { Box, Button, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+
+import { PATH_AUTH } from '../routes/path';
+
 const Container = styled.div`
   display: flex;
   justify-content: center;

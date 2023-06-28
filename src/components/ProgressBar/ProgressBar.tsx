@@ -1,9 +1,10 @@
-import { Box, Chip, Typography } from "@mui/material";
-import { StatusTask } from "../../types/Task";
-import Grid from "@mui/material/Unstable_Grid2";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
-import { useEffect, useState } from "react";
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import { Box, Chip, Typography } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+import { useEffect, useState } from 'react';
+
+import { StatusTask } from '../../types/Task';
 
 interface ProgressBarProps {
   status: StatusTask;

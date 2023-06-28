@@ -1,12 +1,14 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import { configureStore } from '@reduxjs/toolkit';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+
+import { ActionSlice } from './features/ActionSlice';
+import { CategorySlice } from './features/CategorySlice';
+import { MemberSlice } from './features/MemberSlice';
+import { NotificationSlice } from './features/NotificationSlice';
+import { TaskSlice } from './features/TaskSlice';
+import { TeamSlice } from './features/TeamSlice';
+
 // Slice
-import { TaskSlice } from "./features/TaskSlice";
-import { NotificationSlice } from "./features/NotificationSlice";
-import { ActionSlice } from "./features/ActionSlice";
-import { CategorySlice } from "./features/CategorySlice";
-import { MemberSlice } from "./features/MemberSlice";
-import { TeamSlice } from "./features/TeamSlice";
 export const store = configureStore({
   reducer: {
     task: TaskSlice.reducer,

@@ -1,8 +1,9 @@
-import { Suspense, lazy } from "react";
-import AuthGuard from "../guards/AuthGuard";
-import GuestGuard from "../guards/GuestGuard";
-import LoadingPage from "../pages/LoadingPage";
-import { PATH_AUTH, PATH_PAGE, PATH_USER } from "./path";
+import { lazy, Suspense } from 'react';
+
+import AuthGuard from '../guards/AuthGuard';
+import GuestGuard from '../guards/GuestGuard';
+import LoadingPage from '../pages/LoadingPage';
+import { PATH_AUTH, PATH_PAGE, PATH_USER } from './path';
 
 interface Route {
   key: string;

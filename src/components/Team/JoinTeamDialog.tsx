@@ -1,21 +1,5 @@
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  FormControl,
-  TextField,
-  InputLabel,
-  Select,
-  OutlinedInput,
-  Box,
-  Chip,
-  MenuItem,
-  DialogActions,
-  Button,
-  FormHelperText,
-  Input,
-} from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import { Button, Dialog, DialogContent, DialogTitle, FormControl, FormHelperText, Input, InputLabel } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
 
 interface JoinTeamDialogProps {
   open: boolean;

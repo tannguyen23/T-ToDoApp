@@ -1,10 +1,11 @@
-import { Box } from "@mui/material";
-import { StatusTask } from "../types/Task";
-import Grid from "@mui/material/Unstable_Grid2";
-import PendingIcon from "@mui/icons-material/Pending";
-import DoneIcon from "@mui/icons-material/Done";
-import TimelineIcon from "@mui/icons-material/Timeline";
-import ClearIcon from "@mui/icons-material/Clear";
+import ClearIcon from '@mui/icons-material/Clear';
+import DoneIcon from '@mui/icons-material/Done';
+import PendingIcon from '@mui/icons-material/Pending';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import { Box } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+
+import { StatusTask } from '../types/Task';
 
 interface StatusIconProps {
   status: StatusTask;

@@ -1,8 +1,8 @@
-import styled from "styled-components";
+import { Grid } from '@mui/material';
+import styled from 'styled-components';
 
-import NavBar from "../components/NavBar";
-import Tasks from "../components/Task/Tasks";
-import { Grid } from "@mui/material";
+import NavBar from '../components/NavBar';
+import Tasks from '../components/Task/Tasks';
 
 const Container = styled.div`
   width: 100vw;

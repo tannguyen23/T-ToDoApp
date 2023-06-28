@@ -1,5 +1,6 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { Team } from "../../types/Team";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+import { Team } from '../../types/Team';
 
 interface TeamState {
   teams: Team[];

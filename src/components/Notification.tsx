@@ -1,9 +1,10 @@
-import { Button, IconButton, Snackbar } from "@mui/material";
-import React from "react";
-import { useState } from "react";
-import CloseIcon from "@mui/icons-material/Close";
-import { useAppDispatch } from "../redux/store";
-import { sendNotification } from "../redux/features/NotificationSlice";
+import CloseIcon from '@mui/icons-material/Close';
+import { Button, IconButton, Snackbar } from '@mui/material';
+import React from 'react';
+import { useState } from 'react';
+
+import { sendNotification } from '../redux/features/NotificationSlice';
+import { useAppDispatch } from '../redux/store';
 
 interface NotificationProps {
   message: string;

@@ -1,31 +1,28 @@
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  FormControl,
-  TextField,
-  Grid,
-  DialogActions,
-  Button,
   Box,
+  Button,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
   InputLabel,
   MenuItem,
   OutlinedInput,
   Select,
+  SelectChangeEvent,
+  TextField,
   Theme,
   useTheme,
-  SelectChangeEvent,
-} from "@mui/material";
-import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
-import { useState } from "react";
-import { Category } from "../../types/Category";
-import { useAppSelector } from "../../redux/store";
-import { Member } from "../../types/Member";
-import { Team } from "../../types/Team";
-import { useAuth } from "../../contexts/AuthContext";
+} from '@mui/material';
+import dayjs from 'dayjs';
+import { useState } from 'react';
+
+import { useAuth } from '../../contexts/AuthContext';
+import { useAppSelector } from '../../redux/store';
+import { Member } from '../../types/Member';
+import { Team } from '../../types/Team';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;

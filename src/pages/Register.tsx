@@ -1,32 +1,20 @@
-import {
-  AppBar,
-  Box,
-  Button,
-  Checkbox,
-  Container,
-  FormControl,
-  FormControlLabel,
-  IconButton,
-  Link,
-  TextField,
-  Typography,
-} from "@mui/material";
-import * as yup from "yup";
-import GoogleIcon from "@mui/icons-material/Google";
-import Grid from "@mui/material/Unstable_Grid2";
-import styled from "styled-components";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { PATH_AUTH, PATH_PAGE } from "../routes/path";
-import Footer from "../components/Footer";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { RegisterUser } from "../types/Authentication";
-import { useAppDispatch } from "../redux/store";
-import { registerAsync } from "../redux/features/AuthSlice";
-import { finishAction, startAction } from "../redux/features/ActionSlice";
-import { sendNotification } from "../redux/features/NotificationSlice";
-import { AxiosError } from "axios";
+import { yupResolver } from '@hookform/resolvers/yup';
+import GoogleIcon from '@mui/icons-material/Google';
+import { Box, Button, Container, FormControl, Link, TextField, Typography } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+import { AxiosError } from 'axios';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import * as yup from 'yup';
+
+import Footer from '../components/Footer';
+import { finishAction, startAction } from '../redux/features/ActionSlice';
+import { registerAsync } from '../redux/features/AuthSlice';
+import { sendNotification } from '../redux/features/NotificationSlice';
+import { useAppDispatch } from '../redux/store';
+import { PATH_AUTH } from '../routes/path';
+
 const MyContainer = styled.div`
   display: flex;
   justify-content: center;

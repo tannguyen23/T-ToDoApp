@@ -1,16 +1,10 @@
-import {
-  Box,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Typography,
-} from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
-import AddIcon from "@mui/icons-material/Add";
-import { useAppSelector, useAppDispatch } from "../../redux/store";
-import { Team } from "../../types/Team";
-import { useAuth } from "../../contexts/AuthContext";
+import AddIcon from '@mui/icons-material/Add';
+import { Box, Card, CardActionArea, CardContent, CardMedia, Typography } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+
+import { useAuth } from '../../contexts/AuthContext';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { Team } from '../../types/Team';
 
 const renderListTeam = (
   teams: Team[],

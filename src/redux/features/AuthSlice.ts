@@ -1,12 +1,8 @@
-import {
-  ActionReducerMapBuilder,
-  PayloadAction,
-  createAsyncThunk,
-  createSlice,
-} from "@reduxjs/toolkit";
-import { AuthUser, LoginUser, RegisterUser } from "../../types/Authentication";
-import { AxiosError, AxiosResponse } from "axios";
-import authApi from "../../apis/AuthApi";
+import { ActionReducerMapBuilder, createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AxiosError, AxiosResponse } from 'axios';
+
+import authApi from '../../apis/AuthApi';
+import { AuthUser, LoginResponseType, LoginUser, RegisterUser } from '../../types/Authentication';
 
 interface AuthState {
   isLoading: boolean;
@@ -50,7 +46,7 @@ export const loginAsync = createAsyncThunk(
   async (user: LoginUser, { rejectWithValue }) => {
     const response = await authApi
       .login(user)
-      .then((value: AxiosResponse<AuthUser>) => {
+      .then((value: AxiosResponse<LoginResponseType>) => {
         return value.data;
       })
       .catch((error: AxiosError) => {
@@ -71,7 +67,7 @@ export const authSlice = createSlice({
       })
       .addCase(
         registerAsync.fulfilled,
-        (state, action: PayloadAction<AuthUser>) => {
+        (state, action: PayloadAction<RegisterUser>) => {
           state.isLoading = false;
         }
       )
@@ -83,9 +79,9 @@ export const authSlice = createSlice({
       })
       .addCase(
         loginAsync.fulfilled,
-        (state, action: PayloadAction<AuthUser>) => {
+        (state, action: PayloadAction<LoginResponseType>) => {
           state.isLoading = false;
-          state.userInfor = action.payload;
+          state.userInfor = action.payload.user;
         }
       )
       .addCase(loginAsync.rejected, (state) => {

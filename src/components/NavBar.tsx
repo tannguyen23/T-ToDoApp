@@ -1,25 +1,24 @@
-import { useState } from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
-import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
-import ListAltIcon from "@mui/icons-material/ListAlt";
-import SearchIcon from "@mui/icons-material/Search";
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+import { alpha, InputBase, Link, styled } from '@mui/material';
+import AppBar from '@mui/material/AppBar';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import { useLocation, useNavigate } from "react-router-dom";
-import { InputBase, Link, alpha, styled } from "@mui/material";
-import { PATH_AUTH, PATH_USER } from "../routes/path";
-
-import { useAppDispatch } from "../redux/store";
-import { searchTask } from "../redux/features/TaskSlice";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from '../contexts/AuthContext';
+import { searchTask } from '../redux/features/TaskSlice';
+import { useAppDispatch } from '../redux/store';
+import { PATH_AUTH, PATH_USER } from '../routes/path';
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -98,6 +97,7 @@ export default function NavBar() {
   };
 
   const handleLogout = () => {
+    console.log("User logged out");
     setIsLoggedIn(false);
     setAuthUser(null);
   }
