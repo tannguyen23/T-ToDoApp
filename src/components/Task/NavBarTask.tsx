@@ -5,7 +5,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { useRef, useState } from 'react';
 
 import { useAppSelector } from '../../redux/store';
-import { Task } from '../../types/Task';
+import { ViewTask } from '../../types/Task';
 
 export default function NavBarTask() {
 	const monthTasks = useAppSelector((state) => state.task.monthTasks);
@@ -29,7 +29,7 @@ export default function NavBarTask() {
 		setCheckedThisWeek((prev) => !prev);
 	};
 
-	const renderTaskByTime = (task: Task[]) => {
+	const renderTaskByTime = (task: ViewTask[]) => {
 		{
 			return task.map((task, index) => {
 				return (

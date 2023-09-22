@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { useAuth } from '../../contexts/AuthContext';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { StatusTask, Task } from '../../types/Task';
+import { StatusTask, ViewTask } from '../../types/Task';
 import { convertStrDateToMonthDayString } from '../../utils/convert';
 
 interface ListTaskProps {
@@ -18,7 +18,7 @@ export default function ProgressLayout(props: ListTaskProps) {
   const dispatch = useAppDispatch();
   const {authUser} = useAuth();
   const tasks = useAppSelector((state) => state.task.tasks);
-  const isLoadingList = useAppSelector((state) => state.task.isLoading);
+  const isLoadingList= useAppSelector((state) => state.task.isLoading);
 
   const [currentTaskDragId, setCurrentTaskDragId] = useState<string>();
   const [newStatus, setNewStatus] = useState<StatusTask>();
@@ -57,7 +57,7 @@ export default function ProgressLayout(props: ListTaskProps) {
 
   // render function
   const renderListTaskWithStatus = (
-    tasks: Task[],
+    tasks: ViewTask[],
     status: StatusTask,
     handleOpenViewDialog: (id: string | undefined) => void
   ) => {
@@ -146,11 +146,11 @@ export default function ProgressLayout(props: ListTaskProps) {
                             py: 1,
                           }}
                         >
-                          {task.members?.map((member, index) => (
+                          {task.members !== null && task.members?.map((member, index) => (
                             <Chip
                               key={index}
                               size={"small"}
-                              label={member.name}
+                              label={member.fullname}
                               onClick={() => {}}
                             />
                           ))}

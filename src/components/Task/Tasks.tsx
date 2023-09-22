@@ -22,7 +22,7 @@ import {
   updateTaskByIdAsync,
 } from '../../redux/features/TaskSlice';
 import { useAppDispatch } from '../../redux/store';
-import { StatusTask, Task } from '../../types/Task';
+import { AddTask, StatusTask } from '../../types/Task';
 import AddTaskDialog from './AddTaskDialog';
 import EditTaskDialog from './EditTaskDialog';
 import NavBarTask from './NavBarTask';
@@ -88,7 +88,7 @@ export default function Tasks() {
 		setOpenTodoTaskDialog(false);
 	};
 
-	const handleAddTask = (task: Task) => {
+	const handleAddTask = (task: AddTask) => {
 		dispatch(startAction());
 		dispatch(addTaskAsync(task))
 			.unwrap()
@@ -105,7 +105,7 @@ export default function Tasks() {
 			});
 	};
 
-	const handleEditTask = (id: string, task: Task) => {
+	const handleEditTask = (id: string, task: AddTask) => {
 		dispatch(startAction());
 		dispatch(updateTaskByIdAsync({ id, newTask: task })).then(() => {
 			dispatch(getAllTaskByTimeAsync(authUser?.id || ""));
@@ -362,7 +362,7 @@ export default function Tasks() {
 						onClose={() => {
 							handleCloseEditTaskDialog();
 						}}
-						editTask={(id: string, task: Task) => {
+						editTask={(id: string, task: AddTask) => {
 							handleEditTask(id, task);
 						}}
 					/>

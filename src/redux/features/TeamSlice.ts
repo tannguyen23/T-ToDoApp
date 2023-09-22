@@ -1,65 +1,134 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { ActionReducerMapBuilder, createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AxiosResponse } from 'axios';
 
-import { Team } from '../../types/Team';
+import teamApi from '../../apis/TeamApi';
+import { AddTeam, ViewTeam } from '../../types/Team';
 
 interface TeamState {
-  teams: Team[];
+	myTeams : ViewTeam[];
+	joinedTeams: ViewTeam[];
+	isLoading: boolean;
 }
 
 const initialState: TeamState = {
-  teams: [
-    {
-      id: 0,
-      name: "Design ABC",
-      createTime: "23-12-2022",
-      description: "Lorem ipsum dolor sit amet, consectetur adip",
-      ownerId: 1,
-      members: [],
-    },
-    {
-      name: "Front end",
-      ownerId: 0,
-      description:
-        "Focus on the design and implementation of the interface for the project",
-      createTime: "15-05-2023",
-      members: [
-        { id: 0, name: "Nguyen Van B", avatar: "/" },
-        { id: 1, name: "Tran Cong A", avatar: "/" },
-      ],
-      id: 1,
-    },
-    {
-      name: "Back end",
-      ownerId: 0,
-      description:
-        "Focus on API design and implementation, project architecture",
-      createTime: "15-05-2023",
-      members: [
-        { id: 0, name: "Le Thi C", avatar: "/" },
-        { id: 1, name: "Vo Minh D", avatar: "/" },
-      ],
-      id: 2,
-    },
-  ],
+	
+	isLoading: false,
+	myTeams: [],
+	joinedTeams: [],
 };
 
+// Create thunks
+
+export const addTeamAsync = createAsyncThunk(
+	"team/addTeam",
+	async (addTeam: AddTeam, { rejectWithValue }) => {
+		const response = await teamApi
+			.addTeam(addTeam)
+			.then((value: AxiosResponse) => {
+				return value.data;
+			})
+			.catch((error) => {
+				console.log("Loi o day");
+				console.log(error);
+				return rejectWithValue(error);
+			});
+		return response;
+	}
+);
+
+export const loadListMyTeamsAsync =  createAsyncThunk<ViewTeam[], string>(
+	"team/getListMyTeams",
+	async (id: string) => {
+		const response = await teamApi
+			.loadMyTeams(id)
+			.then((value: AxiosResponse) => {
+				return value.data;
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+		return response;
+	}
+);
+export const loadListJoinedTeamsAsync =  createAsyncThunk<ViewTeam[], string>(
+	"team/getListJoinedTeams",
+	async (id: string) => {
+		const response = await teamApi
+			.loadJoinedTeam(id)
+			.then((value: AxiosResponse) => {
+				return value.data;
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+		return response;
+	}
+);
+
 export const TeamSlice = createSlice({
-  name: "team",
-  initialState,
-  reducers: {
-    addTeam: (state, action: PayloadAction<{ addTeam: Team }>) => {
-      console.log("Adding team");
-      action.payload.addTeam.id = state.teams.length;
-      state.teams.push(action.payload.addTeam);
-    },
-    deleteTeam: (state, action: PayloadAction<{ deleteTeamId: number }>) => {
-      console.log("Deleting team");
-      const indexDeleteTeamId = state.teams.findIndex(
-        (team) => team.id === action.payload.deleteTeamId
-      );
-      state.teams.splice(indexDeleteTeamId, 1);
-    },
-  },
+	name: "team",
+	initialState,
+	reducers: {
+		addTeam: (state, action: PayloadAction<{ addTeam: AddTeam }>) => {
+			// console.log("Adding team");
+			// action.payload.addTeam.id = state.teams.length;
+			// state.teams.push(action.payload.addTeam);
+		},
+		deleteTeam: (state, action: PayloadAction<{ deleteTeamId: number }>) => {
+			// console.log("Deleting team");
+			// const indexDeleteTeamId = state.teams.findIndex(
+			// 	(team) => team.id === action.payload.deleteTeamId
+			// );
+			// state.teams.splice(indexDeleteTeamId, 1);
+		},
+	},
+	extraReducers: (builder: ActionReducerMapBuilder<TeamState>) => {
+		builder
+			.addCase(addTeamAsync.pending, (state) => {
+				state.isLoading = true;
+			})
+			.addCase(addTeamAsync.fulfilled, (state) => {
+				state.isLoading = false;
+			})
+			.addCase(addTeamAsync.rejected, (state) => {
+				state.isLoading = true;
+			})
+			.addCase(loadListMyTeamsAsync.pending, (state) => {
+				state.isLoading = true;
+			})
+			.addCase(loadListMyTeamsAsync.fulfilled, (state, action : PayloadAction<ViewTeam[]>) => {
+				state.isLoading = false;
+				const tmpTeamArr: ViewTeam[] = [];
+					action.payload.map((team) => {
+						tmpTeamArr.push({
+							id: team._id,
+							...team,
+						});
+					});
+
+				state.myTeams = tmpTeamArr;
+			})
+			.addCase(loadListMyTeamsAsync.rejected, (state) => {
+				state.isLoading = true;
+			})
+			.addCase(loadListJoinedTeamsAsync.pending, (state) => {
+				state.isLoading = true;
+			})
+			.addCase(loadListJoinedTeamsAsync.fulfilled, (state, action : PayloadAction<ViewTeam[]>) => {
+				state.isLoading = false;
+				const tmpTeamArr: ViewTeam[] = [];
+					action.payload.map((team) => {
+						tmpTeamArr.push({
+							id: team._id,
+							...team,
+						});
+					});
+				state.joinedTeams = tmpTeamArr;
+			})
+			.addCase(loadListJoinedTeamsAsync.rejected, (state) => {
+				state.isLoading = true;
+			})
+	},
 });
 
 export default TeamSlice.reducer;

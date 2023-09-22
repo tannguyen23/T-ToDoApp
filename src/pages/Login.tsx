@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import Footer from '../components/Footer';
+import Footer from '../components/Footer/Footer';
 import { useAuth } from '../contexts/AuthContext';
 import { finishAction, startAction } from '../redux/features/ActionSlice';
 import { loginAsync } from '../redux/features/AuthSlice';

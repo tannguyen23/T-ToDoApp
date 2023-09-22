@@ -1,10 +1,21 @@
 import { Member } from './Member';
 
-export type Team = {
-    id? : number;
-    ownerId : number;
+export type AddTeam = {
+    _id? : string;
+    id? : string;
+    ownerId : string;
     name : string;
     description : string;
-    members : Member[];
-    createTime : string;
+    members : string[] ;
+    createDate : string;
+}
+
+export type ViewTeam = {
+    _id? : string;
+    id? : string;
+    ownerId : string;
+    name : string;
+    description : string;
+    members :  Member[];
+    createDate : string;
 }

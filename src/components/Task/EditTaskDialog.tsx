@@ -25,11 +25,12 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
+import { useAuth } from '../../contexts/AuthContext';
+import { getListDropdownMemberAsync } from '../../redux/features/MemberSlice';
 import { getTaskByIdAsync } from '../../redux/features/TaskSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { Category } from '../../types/Category';
-import { Member } from '../../types/Member';
-import { StatusTask, Task } from '../../types/Task';
+import { AddTask, StatusTask } from '../../types/Task';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -73,14 +74,14 @@ const schema = yup.object({
 export interface EditTaskDialogProps {
 	id: string | undefined;
 	open: boolean;
-	editTask: (id: string, task: Task) => void;
+	editTask: (id: string, task: AddTask) => void;
 	onClose: () => void;
 }
 
 export default function EditTaskDialog(props: EditTaskDialogProps) {
 	const theme = useTheme();
 	const dispatch = useAppDispatch();
-
+	const { authUser } = useAuth();
 	const categories = useAppSelector((state) => state.category.categories);
 	const members = useAppSelector((state) => state.member.members);
 	const task = useAppSelector((state) => state.task.currentTask);
@@ -121,11 +122,9 @@ export default function EditTaskDialog(props: EditTaskDialogProps) {
 					name: category,
 				});
 			});
-			const currentMembers: Member[] = [];
-			memberName.map((member: string, index: number) => {
-				currentMembers.push({
-					name: member,
-				});
+			const selectMembersId: string[] = [];
+			memberName.map((value: string) => {
+				selectMembersId.push(value);
 			});
 			const title = getValues("title").trim();
 			const imgUrl = getValues("imgUrl").trim();
@@ -140,7 +139,7 @@ export default function EditTaskDialog(props: EditTaskDialogProps) {
 						timeStart: timeStartDate?.format("YYYY-MM-DD"),
 						timeEnd: timeEndDate?.format("YYYY-MM-DD"),
 						categories: currentCategories,
-						members: currentMembers,
+						members: selectMembersId,
 						status,
 					});
 				}
@@ -190,7 +189,7 @@ export default function EditTaskDialog(props: EditTaskDialogProps) {
 					});
 					const selectMem: string[] = [];
 					task.members.map((value) => {
-						selectMem.push(value.name);
+						selectMem.push(value.fullname);
 					});
 					setTimeStartDate(dayjs(task.timeStart));
 					setTimeEndDate(dayjs(task.timeEnd));
@@ -207,6 +206,12 @@ export default function EditTaskDialog(props: EditTaskDialogProps) {
 					setValue("status", task.status);
 				}
 			});
+		}
+	}, []);
+
+	useEffect(() => {
+		if (authUser?.id) {
+			dispatch(getListDropdownMemberAsync(authUser?.id));
 		}
 	}, []);
 
@@ -228,7 +233,6 @@ export default function EditTaskDialog(props: EditTaskDialogProps) {
 				>
 					<FormControl sx={{ marginY: "8px", paddingY: "8px" }} fullWidth>
 						<TextField
-							
 							InputLabelProps={{ shrink: true }}
 							{...register("title")}
 							error={errors.title?.message !== undefined}
@@ -241,7 +245,6 @@ export default function EditTaskDialog(props: EditTaskDialogProps) {
 					</FormControl>
 					<FormControl sx={{ marginY: "8px", paddingY: "8px" }} fullWidth>
 						<TextField
-						
 							InputLabelProps={{ shrink: true }}
 							{...register("imgUrl")}
 							error={errors.imgUrl?.message !== undefined}
@@ -254,7 +257,6 @@ export default function EditTaskDialog(props: EditTaskDialogProps) {
 					</FormControl>
 					<FormControl sx={{ paddingY: "8px" }} fullWidth>
 						<TextField
-							
 							InputLabelProps={{ shrink: true }}
 							{...register("description")}
 							error={errors.description?.message !== undefined}
@@ -271,7 +273,6 @@ export default function EditTaskDialog(props: EditTaskDialogProps) {
 							<Grid>
 								<LocalizationProvider dateAdapter={AdapterDayjs}>
 									<DatePicker
-									
 										sx={{ width: "100%" }}
 										value={dayjs(getValues("timeStart"), "DD-MM-YYYY")}
 										{...register("timeStart")}
@@ -280,7 +281,6 @@ export default function EditTaskDialog(props: EditTaskDialogProps) {
 											if (newValue) {
 												setValue("timeStart", newValue?.format("DD-MM-YYYY"));
 												setTimeStartDate(newValue);
-												
 											}
 										}}
 										format="DD/MM/YYYY"
@@ -297,7 +297,6 @@ export default function EditTaskDialog(props: EditTaskDialogProps) {
 							<Grid>
 								<LocalizationProvider dateAdapter={AdapterDayjs}>
 									<DatePicker
-									
 										sx={{ width: "100%" }}
 										value={dayjs(getValues("timeEnd"), "DD-MM-YYYY")}
 										{...register("timeEnd")}
@@ -325,8 +324,6 @@ export default function EditTaskDialog(props: EditTaskDialogProps) {
 					<FormControl sx={{ marginY: "4px" }} fullWidth>
 						<InputLabel id="label-category">Categories</InputLabel>
 						<Select
-							
-
 							{...register("categories")}
 							labelId="label-category"
 							id="category-select"
@@ -393,11 +390,11 @@ export default function EditTaskDialog(props: EditTaskDialogProps) {
 						>
 							{members.map((member) => (
 								<MenuItem
-									key={member.name}
-									value={member.name}
-									style={getStyles(member.name, memberName, theme)}
+									key={member.fullname}
+									value={member.fullname}
+									style={getStyles(member.fullname, memberName, theme)}
 								>
-									{member.name}
+									{member.fullname}
 								</MenuItem>
 							))}
 						</Select>

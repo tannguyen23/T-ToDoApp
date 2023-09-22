@@ -22,15 +22,15 @@ import {
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import { useAuth } from '../../contexts/AuthContext';
-import { useAppSelector } from '../../redux/store';
+import { getListDropdownMemberAsync } from '../../redux/features/MemberSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { Category } from '../../types/Category';
-import { Member } from '../../types/Member';
-import { StatusTask, Task } from '../../types/Task';
+import { AddTask, StatusTask } from '../../types/Task';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -54,7 +54,7 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
 
 export interface AddTaskDialogProps {
 	open: boolean;
-	addTask: (task: Task) => void;
+	addTask: (task: AddTask) => void;
 	onClose: () => void;
 }
 
@@ -90,6 +90,7 @@ export default function AddTaskDialog(props: AddTaskDialogProps) {
 	const theme = useTheme();
 	const today = dayjs();
 	const { authUser } = useAuth();
+	const dispatch = useAppDispatch();
 	const categories = useAppSelector((state) => state.category.categories);
 	const members = useAppSelector((state) => state.member.members);
 
@@ -129,14 +130,11 @@ export default function AddTaskDialog(props: AddTaskDialogProps) {
 				name: category,
 			});
 		});
-		const currentMembers: Member[] = [];
-		memberName.map((member: string, index: number) => {
-			currentMembers.push({
-				// id: index,
-				name: member,
-				// avatar: "/",
-			});
+		const selectMembersId : string[] = [];
+		memberName.map((value: string) => {
+			selectMembersId.push(value);
 		});
+		
 		const title = getValues("title").trim();
 		const imgUrl = getValues("imgUrl").trim();
 		const description = getValues("description").trim();
@@ -152,7 +150,7 @@ export default function AddTaskDialog(props: AddTaskDialogProps) {
 					timeEnd: timeEndDate?.format("YYYY-MM-DD"),
 					ownerId: authUser?.id,
 					categories: currentCategories,
-					members: currentMembers,
+					members: selectMembersId,
 					status,
 				});
 			} else {
@@ -194,6 +192,18 @@ export default function AddTaskDialog(props: AddTaskDialogProps) {
 		);
 		setValue("members", typeof value === "string" ? value.split(",") : value);
 	};
+
+	const getNameByIdMember = (id : string) => {
+		const result = members.find(member => member.id === id);
+		return result?.fullname;
+	}
+
+
+	useEffect(() => {
+		if (authUser?.id) {
+			dispatch(getListDropdownMemberAsync(authUser?.id));
+		}
+	}, []);
 
 	return (
 		<>
@@ -354,7 +364,7 @@ export default function AddTaskDialog(props: AddTaskDialogProps) {
 								renderValue={(selected) => (
 									<Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
 										{selected.map((value) => (
-											<Chip key={value} label={value} />
+											<Chip key={value} label={getNameByIdMember(value)} />
 										))}
 									</Box>
 								)}
@@ -363,11 +373,11 @@ export default function AddTaskDialog(props: AddTaskDialogProps) {
 							>
 								{members.map((member) => (
 									<MenuItem
-										key={member.name}
-										value={member.name}
-										style={getStyles(member.name, memberName, theme)}
+										key={member.id}
+										value={member.id}
+										style={getStyles(member.fullname, memberName, theme)}
 									>
-										{member.name}
+										{member.fullname}
 									</MenuItem>
 								))}
 							</Select>

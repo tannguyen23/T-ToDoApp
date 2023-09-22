@@ -1,13 +1,13 @@
 import { getAccessToken } from '../localStorage/localStorage';
-import { StatusTask, Task } from '../types/Task';
+import { AddTask, StatusTask, ViewTask } from '../types/Task';
 import { axiosClient } from './axiosClient';
 
 class TaskApi {
 	constructor() {}
-	addTask = (task: Task) => {
+	addTask = (task: AddTask) => {
 		const url = `/task`;
 
-		return axiosClient.post<Task>(url, task, {
+		return axiosClient.post<AddTask>(url, task, {
 			headers: { x_authorization: getAccessToken() },
 		});
 	};
@@ -15,7 +15,7 @@ class TaskApi {
 		const id = ownerId;
 		const url = `/task/get-by-ownerid/${id}`;
 
-		return axiosClient.get<Task[]>(url, {
+		return axiosClient.get<ViewTask[]>(url, {
 			headers: { x_authorization: getAccessToken() },
 		});
 	};
@@ -24,7 +24,7 @@ class TaskApi {
 		const id = ownerId;
 		const url = `/task/tasks-on-month/${id}`;
 
-		return axiosClient.get<Task[]>(url, {
+		return axiosClient.get<ViewTask[]>(url, {
 			headers: { x_authorization: getAccessToken() },
 		});
 	}
@@ -33,7 +33,7 @@ class TaskApi {
 		const id = ownerId;
 		const url = `/task/tasks-on-week/${id}`;
 
-		return axiosClient.get<Task[]>(url, {
+		return axiosClient.get<ViewTask[]>(url, {
 			headers: { x_authorization: getAccessToken() },
 		});
 	}
@@ -42,20 +42,20 @@ class TaskApi {
 		const id = ownerId;
 		const url = `/task/tasks-on-date/${id}`;
 
-		return axiosClient.get<Task[]>(url, {
+		return axiosClient.get<ViewTask[]>(url, {
 			headers: { x_authorization: getAccessToken() },
 		});
 	}
 
 	getTaskById = (id: string) => {
 		const url = `/task/${id}`;
-		return axiosClient.get<Task>(url, {
+		return axiosClient.get<ViewTask>(url, {
 			headers: { x_authorization: getAccessToken() },
 		});
 	};
-	updateTask = (id: string, newTask: Task) => {
+	updateTask = (id: string, newTask: AddTask) => {
 		const url = `/task/${id}`;
-		return axiosClient.put<Task>(url, newTask, {
+		return axiosClient.put<ViewTask>(url, newTask, {
 			headers: { x_authorization: getAccessToken() },
 		});
 	};
@@ -71,7 +71,7 @@ class TaskApi {
 	};
 	deletetask = (id: string) => {
 		const url = `/task/${id}`;
-		return axiosClient.delete<Task>(url, {
+		return axiosClient.delete<ViewTask>(url, {
 			headers: { x_authorization: getAccessToken() },
 		});
 	};

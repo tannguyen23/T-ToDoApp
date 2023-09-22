@@ -19,7 +19,7 @@ import { updateStatus } from '../../redux/features/TaskSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { Category } from '../../types/Category';
 import { Member } from '../../types/Member';
-import { StatusTask, Task } from '../../types/Task';
+import { StatusTask, ViewTask } from '../../types/Task';
 import { convertStrDateToVieStringDate } from '../../utils/convert';
 import DeleteConfirmDialog from '../DeleteConfirmDialog';
 import ProgressBar from '../ProgressBar/ProgressBar';
@@ -37,8 +37,8 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
   const { id, open, onDelete, onClickUpdate, onUpdateStatus } = props;
   const dispatch = useAppDispatch();
 
-  const detail: Task | undefined = useAppSelector((state) =>
-    state.task.tasks.find((task: Task) => task.id === id)
+  const detail: ViewTask | undefined = useAppSelector((state) =>
+    state.task.tasks.find((task: ViewTask) => task.id === id)
   );
   const [openRemoveConfirmDialog, setOpenRemoveConfirmDialog] = useState(false);
   const [title, setTitle] = useState("");
@@ -166,7 +166,7 @@ export default function ViewTaskDialog(props: ViewTaskDialogProps) {
           sx={{ py: 1, borderBottom: "1px solid rgba(0, 0, 0, 0.12)" }}
         >
           {members?.map((member) => (
-            <Chip key={member.id} label={member.name} onClick={() => {}} />
+            <Chip key={member.id} label={member.fullname} onClick={() => {}} />
           ))}
         </Grid>
 

@@ -28,7 +28,7 @@ export default function AuthProvider(props: AuthProviderProps) {
 	const [refreshToken, setRefreshToken] = useState<string | null>(null);
 	const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-	const TIMEOUT_MINUTTE = 9;
+	const TIMEOUT_MINUTTE = 58;
 	const timeOutMiliSecond: number = 1000 * 60 * TIMEOUT_MINUTTE;
 	const refreshTokenHandler = () => {
 		if (localStorageRefreshToken) {

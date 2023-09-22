@@ -2,16 +2,16 @@ import { ActionReducerMapBuilder, createAsyncThunk, createSlice, PayloadAction }
 import { AxiosResponse } from 'axios';
 
 import taskApi from '../../apis/TaskApi';
-import { StatusTask, Task } from '../../types/Task';
+import { AddTask, StatusTask, ViewTask } from '../../types/Task';
 
 interface TaskState {
-	tasks: Task[];
-	monthTasks: Task[];
-	weekTasks: Task[];
-	dayTasks: Task[];
-	resultTasks: Task[];
+	tasks: ViewTask[];
+	monthTasks: ViewTask[];
+	weekTasks: ViewTask[];
+	dayTasks: ViewTask[];
+	resultTasks: ViewTask[];
 	isLoading: boolean;
-	currentTask: Task | null;
+	currentTask: ViewTask | null;
 }
 
 const initialState: TaskState = {
@@ -24,12 +24,11 @@ const initialState: TaskState = {
 	currentTask: null,
 };
 
-//  Create thunk
+//  Create thunks
 
 export const addTaskAsync = createAsyncThunk(
 	"task/addTask",
-	async (addTask: Task, { rejectWithValue }) => {
-		console.log(JSON.stringify(addTask));
+	async (addTask: AddTask, { rejectWithValue }) => {
 		const response = await taskApi
 			.addTask(addTask)
 			.then((value: AxiosResponse) => {
@@ -43,7 +42,7 @@ export const addTaskAsync = createAsyncThunk(
 	}
 );
 
-export const getListTaskAsync = createAsyncThunk<Task[], string>(
+export const getListTaskAsync = createAsyncThunk<ViewTask[], string>(
 	"task/getListTask",
 	async (id: string) => {
 		console.log("call get all list api");
@@ -59,7 +58,7 @@ export const getListTaskAsync = createAsyncThunk<Task[], string>(
 	}
 );
 
-export const getListTaskOnMonthAsync = createAsyncThunk<Task[], string>(
+export const getListTaskOnMonthAsync = createAsyncThunk<ViewTask[], string>(
 	"task/getListOnMonthTask",
 	async (id: string) => {
 		const response = await taskApi
@@ -74,7 +73,7 @@ export const getListTaskOnMonthAsync = createAsyncThunk<Task[], string>(
 	}
 );
 
-export const getListTaskOnWeekAsync = createAsyncThunk<Task[], string>(
+export const getListTaskOnWeekAsync = createAsyncThunk<ViewTask[], string>(
 	"task/getListOnWeekTask",
 	async (id: string) => {
 		const response = await taskApi
@@ -89,7 +88,7 @@ export const getListTaskOnWeekAsync = createAsyncThunk<Task[], string>(
 	}
 );
 
-export const getListTaskOnDateAsync = createAsyncThunk<Task[], string>(
+export const getListTaskOnDateAsync = createAsyncThunk<ViewTask[], string>(
 	"task/getListOnDateTask",
 	async (id: string) => {
 		const response = await taskApi
@@ -105,7 +104,7 @@ export const getListTaskOnDateAsync = createAsyncThunk<Task[], string>(
 );
 
 export const getAllTaskByTimeAsync = createAsyncThunk<
-	{ date: Task[]; week: Task[]; month: Task[] },
+	{ date: ViewTask[]; week: ViewTask[]; month: ViewTask[] },
 	string
 >("task/getAllTaskByTime", async (id: string) => {
 	const responseDate = await taskApi
@@ -138,7 +137,7 @@ export const getAllTaskByTimeAsync = createAsyncThunk<
 	return { date: responseDate, week: responseWeek, month: responseMonth };
 });
 
-export const getTaskByIdAsync = createAsyncThunk<Task, string>(
+export const getTaskByIdAsync = createAsyncThunk<ViewTask, string>(
 	"task/getTaskById",
 	async (id: string) => {
 		const response = await taskApi
@@ -155,23 +154,23 @@ export const getTaskByIdAsync = createAsyncThunk<Task, string>(
 
 type UpdateTaskAsyncArg = {
 	id: string;
-	newTask: Task;
+	newTask: AddTask;
 };
 
-export const updateTaskByIdAsync = createAsyncThunk<Task, UpdateTaskAsyncArg>(
-	"task/updateTaskById",
-	async (arg: UpdateTaskAsyncArg) => {
-		const response = await taskApi
-			.updateTask(arg.id, arg.newTask)
-			.then((value: AxiosResponse) => {
-				return value.data;
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-		return response;
-	}
-);
+export const updateTaskByIdAsync = createAsyncThunk<
+	AddTask,
+	UpdateTaskAsyncArg
+>("task/updateTaskById", async (arg: UpdateTaskAsyncArg) => {
+	const response = await taskApi
+		.updateTask(arg.id, arg.newTask)
+		.then((value: AxiosResponse) => {
+			return value.data;
+		})
+		.catch((error) => {
+			console.log(error);
+		});
+	return response;
+});
 
 type UpdateStatusTaskAsyncArg = {
 	id: string;
@@ -179,7 +178,7 @@ type UpdateStatusTaskAsyncArg = {
 };
 
 export const updateStatusTaskAsync = createAsyncThunk<
-	Task,
+	ViewTask,
 	UpdateStatusTaskAsyncArg
 >("task/updateStatusTask", async (arg: UpdateStatusTaskAsyncArg) => {
 	const response = await taskApi
@@ -193,7 +192,7 @@ export const updateStatusTaskAsync = createAsyncThunk<
 	return response;
 });
 
-export const deleteTaskByIdAsync = createAsyncThunk<Task, string>(
+export const deleteTaskByIdAsync = createAsyncThunk<ViewTask, string>(
 	"task/deleteTaskById",
 	async (id: string) => {
 		const response = await taskApi
@@ -231,7 +230,7 @@ export const TaskSlice = createSlice({
 			//   });
 			// });
 		},
-		addTask: (state, action: PayloadAction<{ addTask: Task }>) => {
+		addTask: (state, action: PayloadAction<{ addTask: AddTask }>) => {
 			console.log("Adding task");
 			// action.payload.addTask.id = state.tasks.length;
 			// state.tasks.push(action.payload.addTask);
@@ -281,14 +280,24 @@ export const TaskSlice = createSlice({
 				state.isLoading = false;
 			})
 			.addCase(getAllTaskByTimeAsync.pending, (state) => {
-				state.isLoading = true
+				state.isLoading = true;
 			})
-			.addCase(getAllTaskByTimeAsync.fulfilled, (state, action: PayloadAction<{ date: Task[]; week: Task[]; month: Task[] }>) => {
-				state.isLoading = false;
-				state.monthTasks = action.payload.month;
-				state.weekTasks = action.payload.week;
-				state.dayTasks = action.payload.date;
-			})
+			.addCase(
+				getAllTaskByTimeAsync.fulfilled,
+				(
+					state,
+					action: PayloadAction<{
+						date: ViewTask[];
+						week: ViewTask[];
+						month: ViewTask[];
+					}>
+				) => {
+					state.isLoading = false;
+					state.monthTasks = action.payload.month;
+					state.weekTasks = action.payload.week;
+					state.dayTasks = action.payload.date;
+				}
+			)
 			.addCase(getAllTaskByTimeAsync.rejected, (state) => {
 				state.isLoading = false;
 			})
@@ -297,8 +306,8 @@ export const TaskSlice = createSlice({
 			})
 			.addCase(
 				getListTaskAsync.fulfilled,
-				(state, action: PayloadAction<Task[]>) => {
-					const tmpTaskArr: Task[] = [];
+				(state, action: PayloadAction<ViewTask[]>) => {
+					const tmpTaskArr: ViewTask[] = [];
 					action.payload.map((task) => {
 						tmpTaskArr.push({
 							id: task._id,
@@ -317,8 +326,8 @@ export const TaskSlice = createSlice({
 			})
 			.addCase(
 				getListTaskOnMonthAsync.fulfilled,
-				(state, action: PayloadAction<Task[]>) => {
-					const tmpTaskArr: Task[] = [];
+				(state, action: PayloadAction<ViewTask[]>) => {
+					const tmpTaskArr: ViewTask[] = [];
 					action.payload.map((task) => {
 						tmpTaskArr.push({
 							id: task._id,
@@ -338,8 +347,8 @@ export const TaskSlice = createSlice({
 			})
 			.addCase(
 				getListTaskOnWeekAsync.fulfilled,
-				(state, action: PayloadAction<Task[]>) => {
-					const tmpTaskArr: Task[] = [];
+				(state, action: PayloadAction<ViewTask[]>) => {
+					const tmpTaskArr: ViewTask[] = [];
 					action.payload.map((task) => {
 						tmpTaskArr.push({
 							id: task._id,
@@ -359,8 +368,8 @@ export const TaskSlice = createSlice({
 			})
 			.addCase(
 				getListTaskOnDateAsync.fulfilled,
-				(state, action: PayloadAction<Task[]>) => {
-					const tmpTaskArr: Task[] = [];
+				(state, action: PayloadAction<ViewTask[]>) => {
+					const tmpTaskArr: ViewTask[] = [];
 					action.payload.map((task) => {
 						tmpTaskArr.push({
 							id: task._id,
@@ -380,7 +389,7 @@ export const TaskSlice = createSlice({
 			})
 			.addCase(
 				getTaskByIdAsync.fulfilled,
-				(state, action: PayloadAction<Task>) => {
+				(state, action: PayloadAction<ViewTask>) => {
 					state.currentTask = action.payload;
 					state.isLoading = false;
 				}
@@ -393,7 +402,7 @@ export const TaskSlice = createSlice({
 			})
 			.addCase(
 				updateTaskByIdAsync.fulfilled,
-				(state, action: PayloadAction<Task>) => {
+				(state, action: PayloadAction<AddTask>) => {
 					state.isLoading = false;
 				}
 			)
@@ -405,7 +414,7 @@ export const TaskSlice = createSlice({
 			})
 			.addCase(
 				updateStatusTaskAsync.fulfilled,
-				(state, action: PayloadAction<Task>) => {
+				(state, action: PayloadAction<ViewTask>) => {
 					state.isLoading = false;
 				}
 			)
@@ -417,7 +426,7 @@ export const TaskSlice = createSlice({
 			})
 			.addCase(
 				deleteTaskByIdAsync.fulfilled,
-				(state, action: PayloadAction<Task>) => {
+				(state, action: PayloadAction<ViewTask>) => {
 					state.isLoading = false;
 				}
 			)

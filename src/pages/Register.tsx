@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import * as yup from 'yup';
 
-import Footer from '../components/Footer';
+import Footer from '../components/Footer/Footer';
 import { finishAction, startAction } from '../redux/features/ActionSlice';
 import { registerAsync } from '../redux/features/AuthSlice';
 import { sendNotification } from '../redux/features/NotificationSlice';
@@ -87,7 +87,7 @@ export default function Register() {
     const email = getValues("email").trim();
     const address = getValues("address").trim();
     const password = getValues("password");
-    const avaUrl = "";
+    const avaUrl = "/";
     dispatch(startAction());
     dispatch(
       registerAsync({
